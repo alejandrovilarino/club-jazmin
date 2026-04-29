@@ -1,5 +1,5 @@
 // ══════════════════════════════════════
-// CLUB JAZMÍN — Conexión Supabase
+// CLUB JAZMÍN — main.js
 // ══════════════════════════════════════
 
 const SUPABASE_URL = 'https://qgsdqzqvrbkprbmehzcf.supabase.co';
@@ -35,6 +35,51 @@ const db = {
   }
 };
 
+// ── NAVEGACIÓN MÓVIL ──
+const hamburger = document.getElementById('hamburger');
+const mobileMenu = document.getElementById('mobileMenu');
+const mobileClose = document.getElementById('mobileClose');
+
+if (hamburger) hamburger.addEventListener('click', () => mobileMenu.classList.add('open'));
+if (mobileClose) mobileClose.addEventListener('click', () => mobileMenu.classList.remove('open'));
+if (mobileMenu) {
+  mobileMenu.querySelectorAll('a').forEach(a => {
+    a.addEventListener('click', () => mobileMenu.classList.remove('open'));
+  });
+}
+
+// ── SCROLL SUAVE ──
+document.querySelectorAll('[data-scroll]').forEach(el => {
+  el.addEventListener('click', e => {
+    e.preventDefault();
+    const target = document.querySelector(el.dataset.scroll);
+    if (target) target.scrollIntoView({ behavior: 'smooth', block: 'start' });
+  });
+});
+
+// ── ANIMACIONES AL SCROLL ──
+const observer = new IntersectionObserver(entries => {
+  entries.forEach(entry => {
+    if (entry.isIntersecting) {
+      entry.target.classList.add('visible');
+      observer.unobserve(entry.target);
+    }
+  });
+}, { threshold: 0.1 });
+
+document.querySelectorAll('.animate-on-scroll').forEach(el => observer.observe(el));
+
+// ── HELPERS ──
+function mostrarError(btn, mensaje, originalText) {
+  btn.textContent = mensaje;
+  btn.style.background = '#c52c2e';
+  btn.disabled = false;
+  setTimeout(() => {
+    btn.textContent = originalText;
+    btn.style.background = '';
+  }, 4000);
+}
+
 // ── FORMULARIO DE REGISTRO → SUPABASE ──
 const registroForm = document.getElementById('registroForm');
 if (registroForm) {
@@ -54,17 +99,19 @@ if (registroForm) {
     const estilo = document.getElementById('estilo').value || null;
 
     if (!dni || dni.length < 7) {
-      mostrarError(btn, 'DNI inválido', originalText); return;
+      mostrarError(btn, 'DNI inválido', originalText);
+      return;
     }
 
     try {
       const existentes = await db.select('clientas', `dni=eq.${dni}&select=id,nombre`);
       if (existentes.length > 0) {
-        mostrarError(btn, `Ya existe una cuenta con ese DNI (${existentes[0].nombre})`, originalText); return;
+        mostrarError(btn, 'Ya existe una cuenta con ese DNI (' + existentes[0].nombre + ')', originalText);
+        return;
       }
 
-      const niveles = await db.select('niveles', 'nombre=eq.Inicial&select=id');
-      const nivel_id = niveles[0]?.id || null;
+      const niveles  = await db.select('niveles', 'nombre=eq.Inicial&select=id');
+      const nivel_id = niveles[0] ? niveles[0].id : null;
 
       const nuevaClienta = await db.insert('clientas', {
         dni, nombre, telefono: tel, email,
@@ -74,89 +121,26 @@ if (registroForm) {
 
       await db.insert('movimientos_puntos', {
         clienta_id: nuevaClienta[0].id,
-        tipo: 'ganado', origen: 'registro',
-        puntos: 200, nota: 'Puntos de bienvenida al Club Jazmín'
+        tipo: 'ganado',
+        origen: 'registro',
+        puntos: 200,
+        nota: 'Puntos de bienvenida al Club Jazmin'
       });
 
-      btn.textContent = '¡Bienvenida al Club! 🌹';
+      btn.textContent = 'Bienvenida al Club!';
       btn.style.background = '#026359';
       registroForm.reset();
       window.scrollTo({ top: 0, behavior: 'smooth' });
-      setTimeout(() => { btn.textContent = originalText; btn.disabled = false; btn.style.background = ''; }, 5000);
+      setTimeout(() => {
+        btn.textContent = originalText;
+        btn.disabled = false;
+        btn.style.background = '';
+      }, 5000);
 
     } catch (err) {
       console.error(err);
-      mostrarError(btn, 'Error al registrar. Intentá de nuevo.', originalText);
+      mostrarError(btn, 'Error al registrar. Intenta de nuevo.', originalText);
     }
-  });
-}
-
-function mostrarError(btn, mensaje, originalText) {
-  btn.textContent = mensaje;
-  btn.style.background = '#c52c2e';
-  btn.disabled = false;
-  setTimeout(() => { btn.textContent = originalText; btn.style.background = ''; }, 4000);
-}
-
-// ── NAVEGACIÓN MÓVIL ──
-const hamburger = document.getElementById('hamburger');
-const mobileMenu = document.getElementById('mobileMenu');
-const mobileClose = document.getElementById('mobileClose');
-
-if (hamburger) {
-  hamburger.addEventListener('click', () => mobileMenu.classList.add('open'));
-}
-if (mobileClose) {
-  mobileClose.addEventListener('click', () => mobileMenu.classList.remove('open'));
-}
-if (mobileMenu) {
-  mobileMenu.querySelectorAll('a').forEach(a => {
-    a.addEventListener('click', () => mobileMenu.classList.remove('open'));
-  });
-}
-
-// ── SCROLL SUAVE AL REGISTRO ──
-document.querySelectorAll('[data-scroll]').forEach(el => {
-  el.addEventListener('click', e => {
-    e.preventDefault();
-    const target = document.querySelector(el.dataset.scroll);
-    if (target) target.scrollIntoView({ behavior: 'smooth', block: 'start' });
-  });
-});
-
-// ── ANIMACIÓN AL HACER SCROLL ──
-const observer = new IntersectionObserver(entries => {
-  entries.forEach(entry => {
-    if (entry.isIntersecting) {
-      entry.target.classList.add('visible');
-      observer.unobserve(entry.target);
-    }
-  });
-}, { threshold: 0.1 });
-
-document.querySelectorAll('.animate-on-scroll').forEach(el => observer.observe(el));
-
-// ── FORMULARIO DE REGISTRO ──
-const registroForm = document.getElementById('registroForm');
-if (registroForm) {
-  registroForm.addEventListener('submit', async e => {
-    e.preventDefault();
-    const btn = registroForm.querySelector('.btn-dark');
-    const original = btn.textContent;
-    btn.textContent = 'Procesando...';
-    btn.disabled = true;
-
-    // Simula envío — reemplazar con fetch a Supabase
-    await new Promise(r => setTimeout(r, 1500));
-
-    btn.textContent = '¡Bienvenida al Club!';
-    btn.style.background = '#026359';
-
-    setTimeout(() => {
-      btn.textContent = original;
-      btn.disabled = false;
-      btn.style.background = '';
-    }, 3000);
   });
 }
 
