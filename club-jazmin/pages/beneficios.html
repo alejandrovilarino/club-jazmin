@@ -1,0 +1,298 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Beneficios — Club Jazmín</title>
+  <link rel="stylesheet" href="../css/style.css"/>
+  <style>
+    .beneficios-header {
+      background: var(--grafito);
+      padding: 140px 40px 60px;
+      text-align: center;
+    }
+    .beneficios-header .section-label { color: var(--rosa); }
+    .beneficios-header .section-title { color: var(--tiza); margin-bottom: 0; }
+
+    .beneficios-content { padding: 52px 40px; max-width: 1000px; margin: 0 auto; }
+
+    .filtros {
+      display: flex;
+      gap: 8px;
+      margin-bottom: 36px;
+      flex-wrap: wrap;
+    }
+    .filtro-btn {
+      font-family: var(--font-body);
+      font-size: 10px;
+      letter-spacing: 0.14em;
+      text-transform: uppercase;
+      padding: 8px 18px;
+      border-radius: 20px;
+      border: 1px solid var(--borde);
+      background: transparent;
+      color: var(--vison);
+      cursor: pointer;
+      transition: var(--transition);
+    }
+    .filtro-btn.active,
+    .filtro-btn:hover {
+      background: var(--grafito);
+      border-color: var(--grafito);
+      color: var(--tiza);
+    }
+
+    .beneficios-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(240px, 1fr));
+      gap: 16px;
+    }
+
+    .ben-card {
+      background: var(--blanco);
+      border: 0.5px solid var(--borde);
+      border-radius: 14px;
+      overflow: hidden;
+      transition: var(--transition);
+    }
+    .ben-card:hover { transform: translateY(-4px); box-shadow: 0 12px 40px rgba(28,28,28,0.08); }
+
+    .ben-card-top {
+      padding: 28px 24px 20px;
+      border-bottom: 0.5px solid var(--borde);
+    }
+    .ben-tipo {
+      font-size: 9px;
+      letter-spacing: 0.18em;
+      text-transform: uppercase;
+      margin-bottom: 10px;
+      font-weight: 500;
+    }
+    .ben-tipo.descuento { color: var(--rojo); }
+    .ben-tipo.producto { color: var(--esmeralda); }
+    .ben-tipo.envio { color: var(--azul); }
+    .ben-tipo.experiencia { color: var(--malva); }
+
+    .ben-nombre {
+      font-family: var(--font-display);
+      font-size: 22px;
+      font-weight: 600;
+      margin-bottom: 6px;
+      line-height: 1.1;
+    }
+    .ben-desc {
+      font-size: 12px;
+      font-weight: 300;
+      color: var(--vison);
+      line-height: 1.6;
+    }
+
+    .ben-card-bottom {
+      padding: 16px 24px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+    }
+    .ben-pts {
+      font-family: var(--font-display);
+      font-size: 20px;
+      font-weight: 600;
+    }
+    .ben-pts span {
+      font-family: var(--font-body);
+      font-size: 10px;
+      letter-spacing: 0.1em;
+      color: var(--vison);
+      font-weight: 400;
+      display: block;
+      margin-top: 2px;
+    }
+    .ben-cta {
+      font-family: var(--font-body);
+      font-size: 10px;
+      letter-spacing: 0.14em;
+      text-transform: uppercase;
+      padding: 10px 18px;
+      border-radius: 4px;
+      border: 1px solid;
+      cursor: pointer;
+      transition: var(--transition);
+      background: transparent;
+    }
+    .ben-cta.disponible {
+      border-color: var(--rosa);
+      color: var(--grafito);
+    }
+    .ben-cta.disponible:hover { background: var(--rosa); }
+    .ben-cta.bloqueado {
+      border-color: var(--borde);
+      color: var(--borde);
+      cursor: not-allowed;
+    }
+
+    .nivel-req {
+      font-size: 10px;
+      padding: 3px 10px;
+      border-radius: 20px;
+      margin-left: 8px;
+    }
+    .nivel-req.alta { background: #2a1030; color: #c07fc6; }
+    .nivel-req.inter { background: #0a1c2e; color: #789fbb; }
+
+    @media (max-width: 768px) {
+      .beneficios-header { padding: 120px 20px 48px; }
+      .beneficios-content { padding: 36px 20px; }
+    }
+  </style>
+</head>
+<body>
+
+  <nav class="nav">
+    <a href="../index.html" class="nav-logo">CLUB <em>JAZMÍN</em> DE ROSAS</a>
+    <ul class="nav-links">
+      <li><a href="perfil.html">Mi perfil</a></li>
+      <li><a href="beneficios.html" style="color:var(--tiza)">Beneficios</a></li>
+      <li><a href="skinbook.html">Skinbook</a></li>
+    </ul>
+    <button class="nav-hamburger" id="hamburger" aria-label="Menú">
+      <span></span><span></span><span></span>
+    </button>
+  </nav>
+
+  <div class="nav-mobile" id="mobileMenu">
+    <button class="nav-mobile-close" id="mobileClose">✕</button>
+    <a href="../index.html">Inicio</a>
+    <a href="perfil.html">Mi perfil</a>
+    <a href="beneficios.html">Beneficios</a>
+    <a href="skinbook.html">Skinbook</a>
+  </div>
+
+  <div class="beneficios-header">
+    <p class="section-label">Catálogo</p>
+    <h1 class="section-title">Beneficios disponibles</h1>
+  </div>
+
+  <div class="beneficios-content">
+    <div class="filtros">
+      <button class="filtro-btn active">Todos</button>
+      <button class="filtro-btn">Descuentos</button>
+      <button class="filtro-btn">Productos</button>
+      <button class="filtro-btn">Envíos</button>
+      <button class="filtro-btn">Experiencias</button>
+    </div>
+
+    <div class="beneficios-grid">
+      <div class="ben-card">
+        <div class="ben-card-top">
+          <p class="ben-tipo descuento">Descuento</p>
+          <h3 class="ben-nombre">10% off en tu próxima compra</h3>
+          <p class="ben-desc">Aplicable en tienda física o en la web sobre el total de la compra.</p>
+        </div>
+        <div class="ben-card-bottom">
+          <div class="ben-pts">500 <span>puntos</span></div>
+          <button class="ben-cta disponible">Canjear</button>
+        </div>
+      </div>
+
+      <div class="ben-card">
+        <div class="ben-card-top">
+          <p class="ben-tipo envio">Envío gratis</p>
+          <h3 class="ben-nombre">Envío sin cargo a todo el país</h3>
+          <p class="ben-desc">En tu próximo pedido online, sin monto mínimo.</p>
+        </div>
+        <div class="ben-card-bottom">
+          <div class="ben-pts">300 <span>puntos</span></div>
+          <button class="ben-cta disponible">Canjear</button>
+        </div>
+      </div>
+
+      <div class="ben-card">
+        <div class="ben-card-top">
+          <p class="ben-tipo descuento">Descuento</p>
+          <h3 class="ben-nombre">20% off en marca Celebrate</h3>
+          <p class="ben-desc">Exclusivo en la línea Celebrate. Válido hasta fin de stock.</p>
+        </div>
+        <div class="ben-card-bottom">
+          <div class="ben-pts">900 <span>puntos</span></div>
+          <button class="ben-cta disponible">Canjear</button>
+        </div>
+      </div>
+
+      <div class="ben-card">
+        <div class="ben-card-top">
+          <p class="ben-tipo producto">Producto</p>
+          <h3 class="ben-nombre">Regalo sorpresa Celebrate</h3>
+          <p class="ben-desc">Un producto de la línea Celebrate tamaño completo elegido por nuestras asesoras.</p>
+        </div>
+        <div class="ben-card-bottom">
+          <div class="ben-pts">800 <span>puntos</span></div>
+          <button class="ben-cta disponible">Canjear</button>
+        </div>
+      </div>
+
+      <div class="ben-card">
+        <div class="ben-card-top">
+          <p class="ben-tipo experiencia">Experiencia <span class="nivel-req inter">Intermedia+</span></p>
+          <h3 class="ben-nombre">Asesoramiento personalizado</h3>
+          <p class="ben-desc">Sesión de 30 minutos con una de nuestras asesoras en tienda.</p>
+        </div>
+        <div class="ben-card-bottom">
+          <div class="ben-pts">1.500 <span>puntos</span></div>
+          <button class="ben-cta disponible">Canjear</button>
+        </div>
+      </div>
+
+      <div class="ben-card">
+        <div class="ben-card-top">
+          <p class="ben-tipo experiencia">Experiencia <span class="nivel-req alta">Alta</span></p>
+          <h3 class="ben-nombre">Clase de maquillaje</h3>
+          <p class="ben-desc">Clase grupal de 2 horas con maquilladora profesional. Incluye productos para practicar.</p>
+        </div>
+        <div class="ben-card-bottom">
+          <div class="ben-pts">3.000 <span>puntos</span></div>
+          <button class="ben-cta bloqueado">Nivel requerido</button>
+        </div>
+      </div>
+
+      <div class="ben-card">
+        <div class="ben-card-top">
+          <p class="ben-tipo producto">Producto <span class="nivel-req alta">Alta</span></p>
+          <h3 class="ben-nombre">Kit de temporada</h3>
+          <p class="ben-desc">Kit armado con los productos más elegidos de la temporada. Valorado en $25.000.</p>
+        </div>
+        <div class="ben-card-bottom">
+          <div class="ben-pts">5.000 <span>puntos</span></div>
+          <button class="ben-cta bloqueado">Nivel requerido</button>
+        </div>
+      </div>
+
+      <div class="ben-card">
+        <div class="ben-card-top">
+          <p class="ben-tipo experiencia">Experiencia <span class="nivel-req alta">Alta</span></p>
+          <h3 class="ben-nombre">Acceso anticipado</h3>
+          <p class="ben-desc">Comprá antes que nadie los nuevos lanzamientos de temporada, antes del precio de aumento.</p>
+        </div>
+        <div class="ben-card-bottom">
+          <div class="ben-pts">2.000 <span>puntos</span></div>
+          <button class="ben-cta bloqueado">Nivel requerido</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <footer>
+    <p class="footer-logo">CLUB <em>JAZMÍN</em> DE ROSAS</p>
+    <p class="footer-sub">club.jazminderosas.com.ar</p>
+  </footer>
+
+  <script src="../js/main.js"></script>
+  <script>
+    document.querySelectorAll('.filtro-btn').forEach(btn => {
+      btn.addEventListener('click', () => {
+        document.querySelectorAll('.filtro-btn').forEach(b => b.classList.remove('active'));
+        btn.classList.add('active');
+      });
+    });
+  </script>
+</body>
+</html>

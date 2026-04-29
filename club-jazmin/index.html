@@ -1,0 +1,228 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Club Jazmín — Programa de beneficios</title>
+  <meta name="description" content="Sumá puntos en cada compra y accedé a descuentos, envíos gratis y experiencias exclusivas en Jazmín de Rosas."/>
+  <meta property="og:title" content="Club Jazmín de Rosas"/>
+  <meta property="og:description" content="El programa de beneficios de Jazmín de Rosas."/>
+  <meta property="og:type" content="website"/>
+  <link rel="stylesheet" href="css/style.css"/>
+  <style>
+    .animate-on-scroll {
+      opacity: 0;
+      transform: translateY(24px);
+      transition: opacity 0.7s ease, transform 0.7s ease;
+    }
+    .animate-on-scroll.visible {
+      opacity: 1;
+      transform: translateY(0);
+    }
+  </style>
+</head>
+<body>
+
+  <!-- NAV -->
+  <nav class="nav">
+    <a href="index.html" class="nav-logo">CLUB <em>JAZMÍN</em> DE ROSAS</a>
+    <ul class="nav-links">
+      <li><a href="pages/perfil.html">Mi perfil</a></li>
+      <li><a href="pages/beneficios.html">Beneficios</a></li>
+      <li><a href="pages/skinbook.html">Skinbook</a></li>
+    </ul>
+    <button class="nav-hamburger" id="hamburger" aria-label="Menú">
+      <span></span><span></span><span></span>
+    </button>
+  </nav>
+
+  <div class="nav-mobile" id="mobileMenu">
+    <button class="nav-mobile-close" id="mobileClose">✕</button>
+    <a href="pages/perfil.html">Mi perfil</a>
+    <a href="pages/beneficios.html">Beneficios</a>
+    <a href="pages/skinbook.html">Skinbook</a>
+    <a href="#registro">Registrarse</a>
+  </div>
+
+  <!-- HERO -->
+  <section class="hero">
+    <svg class="hero-sparkle" viewBox="0 0 28 28" fill="none" aria-hidden="true">
+      <line x1="14" y1="0" x2="14" y2="28" stroke="#f1ebe6" stroke-width="1"/>
+      <line x1="0" y1="14" x2="28" y2="14" stroke="#f1ebe6" stroke-width="1"/>
+      <line x1="4" y1="4" x2="24" y2="24" stroke="#f1ebe6" stroke-width="0.6"/>
+      <line x1="24" y1="4" x2="4" y2="24" stroke="#f1ebe6" stroke-width="0.6"/>
+    </svg>
+    <svg class="hero-sparkle-2" viewBox="0 0 18 18" fill="none" aria-hidden="true">
+      <line x1="9" y1="0" x2="9" y2="18" stroke="#df9fb1" stroke-width="1"/>
+      <line x1="0" y1="9" x2="18" y2="9" stroke="#df9fb1" stroke-width="1"/>
+      <line x1="2.5" y1="2.5" x2="15.5" y2="15.5" stroke="#df9fb1" stroke-width="0.6"/>
+      <line x1="15.5" y1="2.5" x2="2.5" y2="15.5" stroke="#df9fb1" stroke-width="0.6"/>
+    </svg>
+
+    <svg class="hero-diamond" viewBox="0 0 100 90" fill="none" aria-label="Diamante Club Jazmín">
+      <polygon points="50,5 87,32 68,18" fill="#df9fb1"/>
+      <polygon points="50,5 68,18 32,18" fill="#a95aaf"/>
+      <polygon points="32,18 68,18 87,32 50,32" fill="#789fbb"/>
+      <polygon points="50,5 32,18 13,32" fill="#c52c2e"/>
+      <polygon points="13,32 32,18 50,32" fill="#e8c021"/>
+      <polygon points="68,18 87,32 50,32" fill="#6a645f"/>
+      <polygon points="13,32 50,32 50,85" fill="#026359"/>
+      <polygon points="50,32 87,32 50,85" fill="#124169"/>
+    </svg>
+
+    <p class="hero-eyebrow">Programa de beneficios</p>
+    <h1 class="hero-title">CLUB<em>JAZMÍN</em></h1>
+    <p class="hero-sub">Sumá puntos en cada compra para acceder a descuentos, envíos gratis y experiencias exclusivas.</p>
+    <div class="hero-ctas">
+      <a href="#registro" class="btn btn-primary" data-scroll="#registro">Quiero unirme</a>
+      <a href="pages/perfil.html" class="btn btn-ghost">Ya soy miembro</a>
+    </div>
+  </section>
+
+  <!-- BENEFICIOS -->
+  <section>
+    <p class="section-label animate-on-scroll">Por qué unirse</p>
+    <h2 class="section-title animate-on-scroll">Beneficios por cada vez que<br>elegís Jazmín de Rosas</h2>
+    <div class="benefits-grid container">
+      <div class="benefit-card animate-on-scroll">
+        <div class="benefit-icon" style="background:#fce8ef;">
+          <svg width="22" height="22" viewBox="0 0 22 22" fill="none" aria-hidden="true">
+            <circle cx="11" cy="11" r="9" stroke="#df9fb1" stroke-width="1.5"/>
+            <text x="11" y="16" text-anchor="middle" font-size="12" fill="#df9fb1" font-family="Georgia">$</text>
+          </svg>
+        </div>
+        <h3 class="benefit-title">Descuentos reales</h3>
+        <p class="benefit-desc">Canjeá puntos por descuentos en pesos o porcentaje directo en tu próxima compra.</p>
+      </div>
+      <div class="benefit-card animate-on-scroll">
+        <div class="benefit-icon" style="background:#e6f0f7;">
+          <svg width="22" height="22" viewBox="0 0 22 22" fill="none" aria-hidden="true">
+            <rect x="3" y="9" width="16" height="11" rx="1.5" stroke="#124169" stroke-width="1.5"/>
+            <path d="M7 9V6.5a4 4 0 018 0V9" stroke="#124169" stroke-width="1.5" stroke-linecap="round"/>
+          </svg>
+        </div>
+        <h3 class="benefit-title">Productos gratis</h3>
+        <p class="benefit-desc">Accedé a productos de regalo según tu nivel. Desde muestras hasta productos de tamaño completo.</p>
+      </div>
+      <div class="benefit-card animate-on-scroll">
+        <div class="benefit-icon" style="background:#e6f5f0;">
+          <svg width="22" height="22" viewBox="0 0 22 22" fill="none" aria-hidden="true">
+            <path d="M11 3l2 5.5h5.5l-4.4 3.3 1.7 5.5L11 14l-4.8 3.3 1.7-5.5L3.5 8.5H9z" stroke="#026359" stroke-width="1.5" stroke-linejoin="round"/>
+          </svg>
+        </div>
+        <h3 class="benefit-title">Experiencias</h3>
+        <p class="benefit-desc">Clases de maquillaje, acceso anticipado a lanzamientos y eventos exclusivos para miembros.</p>
+      </div>
+    </div>
+  </section>
+
+  <div class="divider"></div>
+
+  <!-- NIVELES -->
+  <section class="niveles">
+    <p class="section-label animate-on-scroll">Niveles de membresía</p>
+    <h2 class="section-title animate-on-scroll">Más nos elegís, más te beneficiás</h2>
+    <div class="niveles-grid container">
+      <div class="nivel-card n-inicial animate-on-scroll">
+        <span class="nivel-badge">Inicial</span>
+        <span class="nivel-pts">0 – 999</span>
+        <span class="nivel-label">puntos</span>
+        <ul class="nivel-perks">
+          <li>200 pts de bienvenida</li>
+          <li>Descuentos básicos</li>
+          <li>Acceso al Skinbook</li>
+        </ul>
+      </div>
+      <div class="nivel-card n-inter animate-on-scroll">
+        <span class="nivel-badge">Intermedia</span>
+        <span class="nivel-pts">1.000 – 4.999</span>
+        <span class="nivel-label">puntos</span>
+        <ul class="nivel-perks">
+          <li>1.5× puntos por compra</li>
+          <li>Envíos gratis</li>
+          <li>Productos de regalo</li>
+        </ul>
+      </div>
+      <div class="nivel-card n-alta animate-on-scroll">
+        <span class="nivel-badge">Alta</span>
+        <span class="nivel-pts">5.000+</span>
+        <span class="nivel-label">puntos</span>
+        <ul class="nivel-perks">
+          <li>2× puntos por compra</li>
+          <li>Acceso anticipado</li>
+          <li>Clases y experiencias</li>
+        </ul>
+      </div>
+    </div>
+  </section>
+
+  <!-- REGISTRO -->
+  <section class="registro" id="registro">
+    <p class="section-label animate-on-scroll">Unite ahora</p>
+    <h2 class="section-title animate-on-scroll">Registrate ahora y sumá los puntos<br>de tus compras anteriores</h2>
+
+    <div class="form-wrap animate-on-scroll">
+      <form id="registroForm" novalidate>
+        <div class="form-grid">
+          <div class="form-group">
+            <label class="form-label" for="nombre">Nombre</label>
+            <input class="form-input" type="text" id="nombre" name="nombre" placeholder="Tu nombre" required/>
+          </div>
+          <div class="form-group">
+            <label class="form-label" for="dni">DNI</label>
+            <input class="form-input" type="text" id="dni" name="dni" placeholder="Sin puntos" required maxlength="8"/>
+          </div>
+          <div class="form-group">
+            <label class="form-label" for="telefono">Teléfono (WhatsApp)</label>
+            <input class="form-input" type="tel" id="telefono" name="telefono" placeholder="11 xxxx xxxx" required/>
+          </div>
+          <div class="form-group">
+            <label class="form-label" for="nacimiento">Fecha de nacimiento</label>
+            <input class="form-input" type="date" id="nacimiento" name="nacimiento" required/>
+          </div>
+          <div class="form-group full">
+            <label class="form-label" for="email">Email (opcional)</label>
+            <input class="form-input" type="email" id="email" name="email" placeholder="tu@email.com"/>
+          </div>
+          <div class="form-group full">
+            <label class="form-label" for="piel">Tipo de piel</label>
+            <div class="form-select-wrap">
+              <select class="form-select" id="piel" name="piel" required>
+                <option value="" disabled selected>Seleccioná tu tipo de piel</option>
+                <option value="seca">Seca</option>
+                <option value="mixta">Mixta</option>
+                <option value="grasa">Grasa</option>
+                <option value="sensible">Sensible</option>
+              </select>
+            </div>
+          </div>
+          <div class="form-group full">
+            <label class="form-label" for="estilo">Estilo de maquillaje</label>
+            <div class="form-select-wrap">
+              <select class="form-select" id="estilo" name="estilo" required>
+                <option value="" disabled selected>Seleccioná tu estilo</option>
+                <option value="natural">Natural / sin maquillaje</option>
+                <option value="cotidiano">Cotidiano y sencillo</option>
+                <option value="definido">Definido y dramático</option>
+                <option value="artistico">Artístico / experimental</option>
+              </select>
+            </div>
+          </div>
+        </div>
+        <button type="submit" class="btn btn-dark">Unirme al Club</button>
+        <div class="form-pts-badge">
+          Recibís <strong>200 puntos</strong> de bienvenida al registrarte
+        </div>
+      </form>
+    </div>
+  </section>
+
+  <!-- FOOTER -->
+  <footer>
+    <p class="footer-logo">CLUB <em>JAZMÍN</em> DE ROSAS</p>
+    <p class="footer-sub">club.jazminderosas.com.ar · Todos los derechos reservados</p>
+  </footer>
+
+  <script src="js/main.js"></script>
+</body>
+</html>

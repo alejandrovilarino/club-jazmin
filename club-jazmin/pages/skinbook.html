@@ -1,0 +1,283 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Skinbook — Club Jazmín</title>
+  <link rel="stylesheet" href="../css/style.css"/>
+  <style>
+    .skinbook-header {
+      background: var(--grafito);
+      padding: 140px 40px 60px;
+      text-align: center;
+    }
+    .skinbook-header .section-label { color: var(--rosa); }
+    .skinbook-header .section-title { color: var(--tiza); margin-bottom: 12px; }
+    .skinbook-header p {
+      font-family: var(--font-body);
+      font-size: 13px;
+      font-weight: 300;
+      color: var(--vison);
+      max-width: 420px;
+      margin: 0 auto;
+      line-height: 1.7;
+    }
+
+    .skinbook-content { padding: 52px 40px; max-width: 1000px; margin: 0 auto; }
+
+    .skinbook-cta-banner {
+      background: var(--blanco);
+      border: 0.5px solid var(--borde);
+      border-radius: 14px;
+      padding: 28px 32px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      margin-bottom: 40px;
+      gap: 20px;
+    }
+    .skinbook-cta-text h3 {
+      font-family: var(--font-display);
+      font-size: 22px;
+      font-weight: 600;
+      margin-bottom: 4px;
+    }
+    .skinbook-cta-text p {
+      font-size: 13px;
+      font-weight: 300;
+      color: var(--vison);
+    }
+    .skinbook-cta-text p strong { color: var(--malva); font-weight: 500; }
+
+    .reseña-form {
+      background: var(--blanco);
+      border: 0.5px solid var(--borde);
+      border-radius: 14px;
+      padding: 32px;
+      margin-bottom: 40px;
+      display: none;
+    }
+    .reseña-form.open { display: block; }
+    .reseña-form h3 {
+      font-family: var(--font-display);
+      font-size: 24px;
+      font-weight: 600;
+      margin-bottom: 24px;
+    }
+
+    .star-select {
+      display: flex;
+      gap: 6px;
+      margin-bottom: 20px;
+    }
+    .star-btn {
+      font-size: 24px;
+      background: none;
+      border: none;
+      cursor: pointer;
+      color: var(--borde);
+      transition: color var(--transition);
+      padding: 0;
+    }
+    .star-btn.active { color: var(--amarillo); }
+
+    .form-textarea {
+      width: 100%;
+      border: 1px solid var(--borde);
+      border-radius: 4px;
+      padding: 12px 14px;
+      font-family: var(--font-body);
+      font-size: 14px;
+      font-weight: 300;
+      background: var(--tiza);
+      color: var(--grafito);
+      resize: vertical;
+      min-height: 80px;
+      transition: border-color var(--transition);
+      margin-bottom: 16px;
+    }
+    .form-textarea:focus { outline: none; border-color: var(--rosa); }
+
+    .preguntas-guia {
+      background: var(--tiza);
+      border-radius: 8px;
+      padding: 14px 16px;
+      margin-bottom: 16px;
+      font-size: 12px;
+      color: var(--vison);
+      line-height: 1.8;
+    }
+    .preguntas-guia strong { color: var(--grafito); display: block; margin-bottom: 4px; font-size: 11px; letter-spacing: 0.1em; text-transform: uppercase; }
+
+    @media (max-width: 768px) {
+      .skinbook-header { padding: 120px 20px 48px; }
+      .skinbook-content { padding: 36px 20px; }
+      .skinbook-cta-banner { flex-direction: column; align-items: flex-start; }
+    }
+  </style>
+</head>
+<body>
+
+  <nav class="nav">
+    <a href="../index.html" class="nav-logo">CLUB <em>JAZMÍN</em> DE ROSAS</a>
+    <ul class="nav-links">
+      <li><a href="perfil.html">Mi perfil</a></li>
+      <li><a href="beneficios.html">Beneficios</a></li>
+      <li><a href="skinbook.html" style="color:var(--tiza)">Skinbook</a></li>
+    </ul>
+    <button class="nav-hamburger" id="hamburger" aria-label="Menú">
+      <span></span><span></span><span></span>
+    </button>
+  </nav>
+
+  <div class="nav-mobile" id="mobileMenu">
+    <button class="nav-mobile-close" id="mobileClose">✕</button>
+    <a href="../index.html">Inicio</a>
+    <a href="perfil.html">Mi perfil</a>
+    <a href="beneficios.html">Beneficios</a>
+    <a href="skinbook.html">Skinbook</a>
+  </div>
+
+  <div class="skinbook-header">
+    <p class="section-label">Comunidad</p>
+    <h1 class="section-title">Skinbook</h1>
+    <p>Reseñas reales de clientas reales. Compartí tu experiencia y ayudá a otras a elegir mejor.</p>
+  </div>
+
+  <div class="skinbook-content">
+
+    <!-- CTA DEJAR RESEÑA -->
+    <div class="skinbook-cta-banner">
+      <div class="skinbook-cta-text">
+        <h3>¿Compraste algo recientemente?</h3>
+        <p>Dejá tu reseña y ganás <strong>50 puntos</strong> por cada producto que evaluás.</p>
+      </div>
+      <button class="btn btn-primary" id="toggleForm">Dejar reseña</button>
+    </div>
+
+    <!-- FORMULARIO DE RESEÑA -->
+    <div class="reseña-form" id="reseñaForm">
+      <h3>Tu experiencia con el producto</h3>
+
+      <div class="form-group">
+        <label class="form-label" for="prod-select">Producto a evaluar</label>
+        <div class="form-select-wrap">
+          <select class="form-select" id="prod-select">
+            <option value="" disabled selected>Seleccioná un producto comprado</option>
+            <option>Base L'Oréal True Match — abr 2026</option>
+            <option>Corrector Maybelline Fit Me — abr 2026</option>
+            <option>Paleta Urban Decay — abr 2026</option>
+            <option>Labial Celebrate Nº 12 — mar 2026</option>
+          </select>
+        </div>
+      </div>
+
+      <div class="form-group">
+        <label class="form-label">Puntaje</label>
+        <div class="star-select" id="starSelect">
+          <button class="star-btn" data-star="1">★</button>
+          <button class="star-btn" data-star="2">★</button>
+          <button class="star-btn" data-star="3">★</button>
+          <button class="star-btn" data-star="4">★</button>
+          <button class="star-btn" data-star="5">★</button>
+        </div>
+      </div>
+
+      <div class="preguntas-guia">
+        <strong>Preguntas para guiar tu reseña</strong>
+        ¿Cómo quedó en tu piel? · ¿Cuánto duró? · ¿Lo recomendarías? · ¿Para qué tipo de piel lo recomendarías?
+      </div>
+
+      <div class="form-group">
+        <label class="form-label" for="reseña-texto">Tu reseña</label>
+        <textarea class="form-textarea" id="reseña-texto" placeholder="Contá tu experiencia con este producto..."></textarea>
+      </div>
+
+      <button class="btn btn-dark" style="max-width:200px;">Publicar reseña</button>
+    </div>
+
+    <!-- RESEÑAS EXISTENTES -->
+    <div class="skinbook-grid">
+      <div class="skinbook-card">
+        <p class="skinbook-marca">L'Oréal · Base</p>
+        <h3 class="skinbook-producto">True Match</h3>
+        <p class="skinbook-stars">★★★★★</p>
+        <p class="skinbook-texto">Me encanta la textura, cubre sin sentirse pesada. Ideal para piel mixta como la mía. Lo uso todos los días y dura hasta la noche.</p>
+        <span class="skinbook-pts">+50 pts ganados</span>
+      </div>
+      <div class="skinbook-card">
+        <p class="skinbook-marca">Celebrate · Labial</p>
+        <h3 class="skinbook-producto">Nº 12 Berry</h3>
+        <p class="skinbook-stars">★★★★☆</p>
+        <p class="skinbook-texto">El color es precioso, muy pigmentado. Se seca un poco la boca después de unas horas, pero con brillo encima queda perfecto. Lo recomiendo para salir.</p>
+        <span class="skinbook-pts">+50 pts ganados</span>
+      </div>
+      <div class="skinbook-card">
+        <p class="skinbook-marca">Maybelline · Máscara</p>
+        <h3 class="skinbook-producto">Sky High</h3>
+        <p class="skinbook-stars">★★★★★</p>
+        <p class="skinbook-texto">La mejor máscara que usé en mi vida. Alarga un montón y no mancha. La tenía en la lista de hace tiempo y no me arrepiento nada.</p>
+        <span class="skinbook-pts">+50 pts ganados</span>
+      </div>
+      <div class="skinbook-card">
+        <p class="skinbook-marca">Celebrate · Iluminador</p>
+        <h3 class="skinbook-producto">Golden Hour</h3>
+        <p class="skinbook-stars">★★★★☆</p>
+        <p class="skinbook-texto">Da un brillo muy natural, nada exagerado. Lo uso en pómulos y nariz y queda re bien. Para piel seca es ideal porque no se ve polvoriento.</p>
+        <span class="skinbook-pts">+50 pts ganados</span>
+      </div>
+      <div class="skinbook-card">
+        <p class="skinbook-marca">NYX · Delineador</p>
+        <h3 class="skinbook-producto">Epic Ink Liner</h3>
+        <p class="skinbook-stars">★★★☆☆</p>
+        <p class="skinbook-texto">Está bueno pero cuesta acostumbrarse al pincel. Una vez que aprendés a manejarlo da un delineado muy preciso. No es para principiantes.</p>
+        <span class="skinbook-pts">+50 pts ganados</span>
+      </div>
+      <div class="skinbook-card">
+        <p class="skinbook-marca">L'Oréal · Corrector</p>
+        <h3 class="skinbook-producto">Infallible More Than Concealer</h3>
+        <p class="skinbook-stars">★★★★★</p>
+        <p class="skinbook-texto">Tapa todo lo que necesito y la cobertura dura todo el día. Lo uso para ojeras y manchitas. Es de los mejores que probé en su rango de precio.</p>
+        <span class="skinbook-pts">+50 pts ganados</span>
+      </div>
+    </div>
+  </div>
+
+  <footer>
+    <p class="footer-logo">CLUB <em>JAZMÍN</em> DE ROSAS</p>
+    <p class="footer-sub">club.jazminderosas.com.ar</p>
+  </footer>
+
+  <script src="../js/main.js"></script>
+  <script>
+    const toggleForm = document.getElementById('toggleForm');
+    const reseñaForm = document.getElementById('reseñaForm');
+    toggleForm.addEventListener('click', () => {
+      reseñaForm.classList.toggle('open');
+      toggleForm.textContent = reseñaForm.classList.contains('open') ? 'Cerrar' : 'Dejar reseña';
+    });
+
+    let selectedStars = 0;
+    document.querySelectorAll('.star-btn').forEach(btn => {
+      btn.addEventListener('click', () => {
+        selectedStars = parseInt(btn.dataset.star);
+        document.querySelectorAll('.star-btn').forEach((b, i) => {
+          b.classList.toggle('active', i < selectedStars);
+        });
+      });
+      btn.addEventListener('mouseenter', () => {
+        const hovered = parseInt(btn.dataset.star);
+        document.querySelectorAll('.star-btn').forEach((b, i) => {
+          b.style.color = i < hovered ? 'var(--amarillo)' : '';
+        });
+      });
+      btn.addEventListener('mouseleave', () => {
+        document.querySelectorAll('.star-btn').forEach((b, i) => {
+          b.style.color = '';
+          b.classList.toggle('active', i < selectedStars);
+        });
+      });
+    });
+  </script>
+</body>
+</html>
