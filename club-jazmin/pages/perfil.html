@@ -6,94 +6,317 @@
   <title>Mi perfil — Club Jazmín</title>
   <link rel="stylesheet" href="../css/style.css"/>
   <style>
-    .perfil-content { padding: 40px; max-width: 860px; margin: 0 auto; }
-    .perfil-section-title {
+    /* ── LOGIN ── */
+    .login-screen {
+      min-height: 100vh;
+      background: var(--grafito);
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      padding: 40px 20px;
+      text-align: center;
+    }
+    .login-eyebrow {
+      font-family: var(--font-body);
+      font-size: 10px;
+      letter-spacing: 0.24em;
+      text-transform: uppercase;
+      color: var(--rosa);
+      margin-bottom: 16px;
+    }
+    .login-title {
+      font-family: var(--font-display);
+      font-size: clamp(32px, 6vw, 52px);
+      color: var(--tiza);
+      margin-bottom: 10px;
+      font-weight: 600;
+    }
+    .login-sub {
+      font-family: var(--font-body);
+      font-size: 13px;
+      font-weight: 300;
+      color: var(--vison);
+      margin-bottom: 40px;
+      line-height: 1.6;
+    }
+    .login-form {
+      width: 100%;
+      max-width: 320px;
+    }
+    .login-input {
+      width: 100%;
+      box-sizing: border-box;
+      background: rgba(241,235,230,0.06);
+      border: 1px solid rgba(241,235,230,0.15);
+      border-radius: 4px;
+      padding: 14px 16px;
+      font-family: var(--font-body);
+      font-size: 18px;
+      color: var(--tiza);
+      text-align: center;
+      letter-spacing: 0.1em;
+      margin-bottom: 12px;
+      transition: border-color 0.3s;
+    }
+    .login-input::placeholder { color: rgba(241,235,230,0.25); letter-spacing: 0.1em; }
+    .login-input:focus { outline: none; border-color: var(--rosa); }
+    .login-btn {
+      width: 100%;
+      background: var(--rosa);
+      color: var(--grafito);
+      border: none;
+      padding: 14px;
+      font-family: var(--font-body);
+      font-size: 11px;
+      font-weight: 500;
+      letter-spacing: 0.18em;
+      text-transform: uppercase;
+      border-radius: 4px;
+      cursor: pointer;
+      transition: background 0.3s;
+    }
+    .login-btn:hover { background: #e8b5c8; }
+    .login-btn:disabled { opacity: 0.5; cursor: not-allowed; }
+    .login-error {
+      color: #e57373;
+      font-size: 12px;
+      font-family: var(--font-body);
+      margin-top: 10px;
+      min-height: 18px;
+    }
+    .login-register {
+      margin-top: 24px;
+      font-family: var(--font-body);
+      font-size: 12px;
+      color: var(--vison);
+    }
+    .login-register a { color: var(--rosa); text-decoration: none; }
+
+    /* ── PERFIL ── */
+    .perfil-screen { display: none; }
+    .perfil-screen.visible { display: block; }
+
+    .perfil-hero {
+      background: var(--grafito);
+      padding: 100px 40px 50px;
+      text-align: center;
+    }
+    .perfil-avatar {
+      width: 64px;
+      height: 64px;
+      border-radius: 50%;
+      background: var(--rosa);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      margin: 0 auto 16px;
+      font-family: var(--font-display);
+      font-size: 24px;
+      font-weight: 600;
+      color: var(--grafito);
+    }
+    .perfil-nombre {
+      font-family: var(--font-display);
+      font-size: clamp(28px, 5vw, 42px);
+      font-weight: 600;
+      color: var(--tiza);
+      margin-bottom: 10px;
+    }
+    .perfil-nivel-badge {
+      display: inline-block;
+      font-family: var(--font-body);
+      font-size: 10px;
+      letter-spacing: 0.18em;
+      text-transform: uppercase;
+      padding: 5px 16px;
+      border-radius: 20px;
+      border: 1px solid;
+      margin-bottom: 6px;
+    }
+    .nivel-Inicial { color: var(--vison); border-color: var(--vison); }
+    .nivel-Intermedia { color: #789fbb; border-color: #789fbb; }
+    .nivel-Alta { color: #c07fc6; border-color: #c07fc6; }
+
+    .perfil-logout {
+      display: block;
+      margin-top: 12px;
+      font-family: var(--font-body);
+      font-size: 10px;
+      letter-spacing: 0.12em;
+      color: #3a3a3a;
+      cursor: pointer;
+      background: none;
+      border: none;
+      text-transform: uppercase;
+    }
+    .perfil-logout:hover { color: var(--vison); }
+
+    /* ── PUNTOS CARD ── */
+    .puntos-wrap {
+      max-width: 520px;
+      margin: -28px auto 0;
+      padding: 0 20px;
+      position: relative;
+      z-index: 2;
+    }
+    .puntos-card {
+      background: var(--blanco);
+      border: 0.5px solid var(--borde);
+      border-radius: 16px;
+      padding: 32px;
+      text-align: center;
+    }
+    .puntos-numero {
+      font-family: var(--font-display);
+      font-size: clamp(56px, 12vw, 80px);
+      font-weight: 300;
+      color: var(--grafito);
+      line-height: 1;
+      margin-bottom: 4px;
+    }
+    .puntos-label {
+      font-family: var(--font-body);
+      font-size: 10px;
+      letter-spacing: 0.18em;
+      text-transform: uppercase;
+      color: var(--vison);
+      margin-bottom: 20px;
+    }
+    .progress-bar { width: 100%; height: 3px; background: var(--borde); border-radius: 2px; margin-bottom: 8px; overflow: hidden; }
+    .progress-fill { height: 100%; background: var(--rosa); border-radius: 2px; transition: width 1.2s cubic-bezier(0.4,0,0.2,1); width: 0%; }
+    .progress-labels { display: flex; justify-content: space-between; font-size: 10px; color: var(--vison); font-family: var(--font-body); letter-spacing: 0.06em; }
+
+    /* ── CONTENIDO ── */
+    .perfil-content { max-width: 760px; margin: 0 auto; padding: 48px 20px; }
+    .perfil-section { margin-bottom: 48px; }
+    .perfil-section-label {
       font-family: var(--font-body);
       font-size: 10px;
       letter-spacing: 0.2em;
       text-transform: uppercase;
       color: var(--vison);
-      margin-bottom: 20px;
+      margin-bottom: 16px;
       padding-bottom: 10px;
       border-bottom: 1px solid var(--borde);
     }
-    .perfil-block { margin-bottom: 52px; }
-    .table-wrap {
-      background: var(--blanco);
-      border: 0.5px solid var(--borde);
-      border-radius: 12px;
-      overflow: hidden;
-    }
-    .compras-list { display: flex; flex-direction: column; gap: 0; }
-    .compra-item {
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      padding: 16px 20px;
-      border-bottom: 0.5px solid var(--borde);
-    }
-    .compra-item:last-child { border-bottom: none; }
-    .compra-fecha { font-size: 12px; color: var(--vison); }
-    .compra-detalle { font-size: 14px; font-weight: 400; flex: 1; padding: 0 16px; }
-    .compra-monto { font-family: var(--font-display); font-size: 18px; font-weight: 600; }
-    .beneficios-disp {
-      display: grid;
-      grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
-      gap: 12px;
-    }
-    .beneficio-card {
-      background: var(--blanco);
-      border: 0.5px solid var(--borde);
-      border-radius: 12px;
-      padding: 20px;
-    }
-    .beneficio-tipo {
+
+    /* Historial */
+    .historial-table { width: 100%; border-collapse: collapse; font-size: 13px; }
+    .historial-table th {
+      font-family: var(--font-body);
       font-size: 10px;
       letter-spacing: 0.12em;
       text-transform: uppercase;
       color: var(--vison);
-      margin-bottom: 8px;
+      font-weight: 500;
+      padding: 10px 12px;
+      text-align: left;
+      border-bottom: 1px solid var(--borde);
     }
-    .beneficio-nombre {
+    .historial-table td {
+      padding: 12px 12px;
+      border-bottom: 0.5px solid var(--borde);
+      color: var(--grafito);
+      font-family: var(--font-body);
+      font-weight: 300;
+    }
+    .pts-pos { color: #026359; font-weight: 500; }
+    .pts-neg { color: var(--rojo); font-weight: 500; }
+    .canal-badge {
+      display: inline-block;
+      font-size: 9px;
+      padding: 2px 8px;
+      border-radius: 20px;
+      letter-spacing: 0.06em;
+      text-transform: uppercase;
+    }
+    .canal-fisica { background: #e6f0f7; color: var(--azul); }
+    .canal-online { background: #f7e8f0; color: var(--malva); }
+    .origen-badge {
+      display: inline-block;
+      font-size: 9px;
+      padding: 2px 8px;
+      border-radius: 20px;
+      letter-spacing: 0.06em;
+      background: #f5f0eb;
+      color: var(--vison);
+    }
+
+    /* Compras */
+    .compras-list { display: flex; flex-direction: column; gap: 1px; }
+    .compra-item {
+      background: var(--blanco);
+      border: 0.5px solid var(--borde);
+      border-radius: 10px;
+      padding: 16px 20px;
+      margin-bottom: 8px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 12px;
+    }
+    .compra-fecha { font-size: 11px; color: var(--vison); font-family: var(--font-body); white-space: nowrap; }
+    .compra-productos { flex: 1; }
+    .compra-producto-nombre { font-family: var(--font-body); font-size: 13px; font-weight: 400; color: var(--grafito); }
+    .compra-producto-extra { font-size: 11px; color: var(--vison); margin-top: 2px; }
+    .compra-monto {
       font-family: var(--font-display);
       font-size: 18px;
       font-weight: 600;
-      margin-bottom: 8px;
+      color: var(--grafito);
+      white-space: nowrap;
     }
-    .beneficio-pts-req {
-      font-size: 12px;
-      color: var(--vison);
-      margin-bottom: 14px;
-    }
-    .btn-canjear {
-      width: 100%;
-      padding: 10px;
+    .compra-pts { font-size: 10px; color: #026359; font-family: var(--font-body); text-align: right; }
+
+    /* Empty state */
+    .empty-state {
+      text-align: center;
+      padding: 32px;
       font-family: var(--font-body);
-      font-size: 10px;
+      font-size: 13px;
+      color: var(--vison);
+      font-weight: 300;
+    }
+
+    /* Loading */
+    .loading {
+      text-align: center;
+      padding: 60px 20px;
+      font-family: var(--font-body);
+      font-size: 12px;
       letter-spacing: 0.14em;
       text-transform: uppercase;
-      border-radius: 4px;
-      cursor: pointer;
-      border: 1px solid var(--rosa);
-      background: transparent;
-      color: var(--grafito);
-      transition: var(--transition);
+      color: var(--vison);
     }
-    .btn-canjear:hover { background: var(--rosa); }
-    .btn-canjear:disabled {
-      border-color: var(--borde);
-      color: var(--borde);
-      cursor: not-allowed;
+    .loading-dot {
+      display: inline-block;
+      width: 6px;
+      height: 6px;
+      border-radius: 50%;
+      background: var(--rosa);
+      margin: 0 3px;
+      animation: loading-bounce 1.2s ease-in-out infinite;
     }
-    @media (max-width: 768px) {
-      .perfil-content { padding: 20px; }
-      .compra-item { flex-direction: column; align-items: flex-start; gap: 4px; }
-      .compra-detalle { padding: 4px 0; }
+    .loading-dot:nth-child(2) { animation-delay: 0.2s; }
+    .loading-dot:nth-child(3) { animation-delay: 0.4s; }
+    @keyframes loading-bounce {
+      0%, 80%, 100% { transform: translateY(0); opacity: 0.4; }
+      40% { transform: translateY(-6px); opacity: 1; }
+    }
+
+    @media (max-width: 600px) {
+      .perfil-hero { padding: 90px 20px 40px; }
+      .compra-item { flex-direction: column; align-items: flex-start; }
+      .compra-monto { align-self: flex-end; }
+      .historial-table th:nth-child(3),
+      .historial-table td:nth-child(3) { display: none; }
     }
   </style>
 </head>
 <body>
 
+  <!-- NAV -->
   <nav class="nav">
     <a href="../index.html" class="nav-logo">CLUB <em>JAZMÍN</em> DE ROSAS</a>
     <ul class="nav-links">
@@ -114,37 +337,181 @@
     <a href="skinbook.html">Skinbook</a>
   </div>
 
-  <!-- PERFIL HERO -->
-  <div class="perfil-hero">
-    <div class="perfil-avatar">S</div>
-    <h1 class="perfil-nombre">Sofía Martínez</h1>
-    <span class="perfil-nivel-badge" style="color:#789fbb; border-color:#789fbb;">
-      ✦ Intermedia
-    </span>
+  <!-- LOGIN -->
+  <div class="login-screen" id="loginScreen">
+    <p class="login-eyebrow">Club Jazmín de Rosas</p>
+    <h1 class="login-title">Mi perfil</h1>
+    <p class="login-sub">Ingresá tu DNI para ver<br>tus puntos y beneficios</p>
+    <div class="login-form">
+      <input class="login-input" type="text" id="dniInput" placeholder="DNI sin puntos" maxlength="9" inputmode="numeric"/>
+      <button class="login-btn" id="loginBtn">Ver mi perfil</button>
+      <p class="login-error" id="loginError"></p>
+    </div>
+    <p class="login-register">¿Todavía no sos miembro? <a href="../index.html#registro">Registrate acá</a></p>
   </div>
 
-  <!-- TARJETA DE PUNTOS -->
-  <div style="padding: 0 40px; max-width: 560px; margin: -30px auto 0; position: relative; z-index: 2;">
-    <div class="perfil-pts-card">
-      <p class="perfil-pts-label">Puntos disponibles</p>
-      <p class="perfil-pts-numero" data-pts="1840">0</p>
-      <p class="perfil-pts-label" style="margin-top:4px;">Próximo nivel: Alta (5.000 pts)</p>
-      <div class="progress-bar">
-        <div class="progress-fill" data-progress="37" style="width:0%"></div>
+  <!-- PERFIL -->
+  <div class="perfil-screen" id="perfilScreen">
+
+    <div class="perfil-hero">
+      <div class="perfil-avatar" id="perfilAvatar">?</div>
+      <h1 class="perfil-nombre" id="perfilNombre">Cargando...</h1>
+      <span class="perfil-nivel-badge nivel-Inicial" id="perfilNivel">Inicial</span>
+      <button class="perfil-logout" id="logoutBtn">Cerrar sesión</button>
+    </div>
+
+    <div class="puntos-wrap">
+      <div class="puntos-card">
+        <p class="puntos-label">Puntos disponibles</p>
+        <p class="puntos-numero" id="puntosNumero">0</p>
+        <p class="puntos-label" id="puntosProximo" style="margin-top:4px;"></p>
+        <div class="progress-bar">
+          <div class="progress-fill" id="progressFill"></div>
+        </div>
+        <div class="progress-labels">
+          <span id="progressActual">0 pts</span>
+          <span id="progressSiguiente"></span>
+        </div>
       </div>
-      <div class="progress-labels">
-        <span>1.840 pts actuales</span>
-        <span>5.000 pts</span>
+    </div>
+
+    <div class="perfil-content">
+
+      <!-- HISTORIAL DE MOVIMIENTOS -->
+      <div class="perfil-section">
+        <p class="perfil-section-label">Movimientos de puntos</p>
+        <div id="historialContainer">
+          <div class="loading">
+            <span class="loading-dot"></span>
+            <span class="loading-dot"></span>
+            <span class="loading-dot"></span>
+          </div>
+        </div>
       </div>
+
+      <!-- COMPRAS -->
+      <div class="perfil-section">
+        <p class="perfil-section-label">Compras anteriores</p>
+        <div id="comprasContainer">
+          <div class="loading">
+            <span class="loading-dot"></span>
+            <span class="loading-dot"></span>
+            <span class="loading-dot"></span>
+          </div>
+        </div>
+      </div>
+
     </div>
   </div>
 
-  <div class="perfil-content">
+  <footer>
+    <p class="footer-logo">CLUB <em>JAZMÍN</em> DE ROSAS</p>
+    <p class="footer-sub">club.jazminderosas.com.ar</p>
+  </footer>
 
-    <!-- HISTORIAL -->
-    <div class="perfil-block">
-      <p class="perfil-section-title">Historial de movimientos</p>
-      <div class="table-wrap">
+  <script src="../js/main.js"></script>
+  <script>
+    const SUPABASE_URL = 'https://qgsdqzqvrbkprbmehzcf.supabase.co';
+    const SUPABASE_KEY = 'sb_publishable_0RGb096UtD0AQYRtukuNwg_zmLf3nwF';
+
+    const NIVELES = {
+      'Inicial':    { min: 0,    max: 999,  next: 'Intermedia', nextPts: 1000  },
+      'Intermedia': { min: 1000, max: 4999, next: 'Alta',       nextPts: 5000  },
+      'Alta':       { min: 5000, max: null, next: null,         nextPts: null  }
+    };
+
+    async function sbGet(tabla, filtro) {
+      const res = await fetch(`${SUPABASE_URL}/rest/v1/${tabla}?${filtro}`, {
+        headers: { 'apikey': SUPABASE_KEY, 'Authorization': `Bearer ${SUPABASE_KEY}` }
+      });
+      return res.json();
+    }
+
+    function getNivel(puntos) {
+      if (puntos >= 5000) return 'Alta';
+      if (puntos >= 1000) return 'Intermedia';
+      return 'Inicial';
+    }
+
+    function formatPesos(n) {
+      return '$' + Math.round(n).toLocaleString('es-AR');
+    }
+
+    function formatFecha(iso) {
+      if (!iso) return '—';
+      const d = new Date(iso);
+      return d.toLocaleDateString('es-AR', { day: '2-digit', month: 'short', year: 'numeric' });
+    }
+
+    function animarNumero(el, target) {
+      let current = 0;
+      const step = Math.ceil(target / 60);
+      const interval = setInterval(() => {
+        current = Math.min(current + step, target);
+        el.textContent = current.toLocaleString('es-AR');
+        if (current >= target) clearInterval(interval);
+      }, 20);
+    }
+
+    async function cargarPerfil(dni) {
+      // 1. Buscar clienta
+      const clientas = await sbGet('clientas', `dni=eq.${dni}&select=id,nombre,puntos_actuales,nivel_id,creada_en`);
+      if (!clientas || clientas.length === 0) return null;
+      const clienta = clientas[0];
+
+      // 2. Mostrar hero
+      const nombre = clienta.nombre || 'Clienta';
+      const puntos = clienta.puntos_actuales || 0;
+      const nivel = getNivel(puntos);
+      const nivelInfo = NIVELES[nivel];
+
+      document.getElementById('perfilAvatar').textContent = nombre.charAt(0).toUpperCase();
+      document.getElementById('perfilNombre').textContent = nombre;
+      const nivelBadge = document.getElementById('perfilNivel');
+      nivelBadge.textContent = '✦ ' + nivel;
+      nivelBadge.className = `perfil-nivel-badge nivel-${nivel}`;
+
+      // 3. Puntos con animación
+      animarNumero(document.getElementById('puntosNumero'), puntos);
+
+      // Barra de progreso
+      if (nivelInfo.nextPts) {
+        const pct = Math.min((puntos / nivelInfo.nextPts) * 100, 100);
+        document.getElementById('puntosProximo').textContent = `Próximo nivel: ${nivelInfo.next} (${nivelInfo.nextPts.toLocaleString('es-AR')} pts)`;
+        setTimeout(() => { document.getElementById('progressFill').style.width = pct + '%'; }, 300);
+        document.getElementById('progressActual').textContent = puntos.toLocaleString('es-AR') + ' pts';
+        document.getElementById('progressSiguiente').textContent = nivelInfo.nextPts.toLocaleString('es-AR') + ' pts';
+      } else {
+        document.getElementById('puntosProximo').textContent = '✦ Nivel máximo alcanzado';
+        document.getElementById('progressFill').style.width = '100%';
+        document.getElementById('progressFill').style.background = '#a95aaf';
+        document.getElementById('progressActual').textContent = puntos.toLocaleString('es-AR') + ' pts';
+        document.getElementById('progressSiguiente').textContent = 'Alta';
+      }
+
+      // 4. Historial de movimientos
+      const movimientos = await sbGet('movimientos_puntos',
+        `clienta_id=eq.${clienta.id}&select=tipo,origen,puntos,nota,creado_en&order=creado_en.desc&limit=20`
+      );
+      renderHistorial(movimientos || []);
+
+      // 5. Compras
+      const compras = await sbGet('compras',
+        `clienta_id=eq.${clienta.id}&select=canal,monto,productos,puntos_generados,fecha&order=fecha.desc&limit=10`
+      );
+      renderCompras(compras || []);
+
+      return clienta;
+    }
+
+    function renderHistorial(movimientos) {
+      const container = document.getElementById('historialContainer');
+      if (movimientos.length === 0) {
+        container.innerHTML = '<div class="empty-state">Todavía no tenés movimientos registrados.</div>';
+        return;
+      }
+      const origenLabel = { compra: 'Compra', registro: 'Registro', 'reseña': 'Reseña', cumpleanos: 'Cumpleaños', ajuste_manual: 'Ajuste' };
+      container.innerHTML = `
         <table class="historial-table">
           <thead>
             <tr>
@@ -155,108 +522,110 @@
             </tr>
           </thead>
           <tbody>
-            <tr>
-              <td>24 abr 2026</td>
-              <td>Compra — Base L'Oréal, Corrector Maybelline</td>
-              <td><span class="canal-badge canal-fisica">Tienda</span></td>
-              <td class="pts-pos">+320</td>
-            </tr>
-            <tr>
-              <td>18 abr 2026</td>
-              <td>Reseña Skinbook — Labial Celebrate</td>
-              <td><span class="canal-badge canal-online">Online</span></td>
-              <td class="pts-pos">+50</td>
-            </tr>
-            <tr>
-              <td>10 abr 2026</td>
-              <td>Compra — Paleta de sombras, Máscara</td>
-              <td><span class="canal-badge canal-online">Online</span></td>
-              <td class="pts-pos">+280</td>
-            </tr>
-            <tr>
-              <td>03 abr 2026</td>
-              <td>Canje — Descuento 10%</td>
-              <td><span class="canal-badge canal-fisica">Tienda</span></td>
-              <td class="pts-neg">−200</td>
-            </tr>
-            <tr>
-              <td>15 mar 2026</td>
-              <td>Puntos de bienvenida</td>
-              <td><span class="canal-badge canal-online">Online</span></td>
-              <td class="pts-pos">+200</td>
-            </tr>
+            ${movimientos.map(m => `
+              <tr>
+                <td>${formatFecha(m.creado_en)}</td>
+                <td>${m.nota || origenLabel[m.origen] || m.origen}</td>
+                <td><span class="origen-badge">${origenLabel[m.origen] || m.origen}</span></td>
+                <td class="${m.tipo === 'ganado' ? 'pts-pos' : 'pts-neg'}">
+                  ${m.tipo === 'ganado' ? '+' : '−'}${Math.abs(m.puntos).toLocaleString('es-AR')}
+                </td>
+              </tr>
+            `).join('')}
           </tbody>
-        </table>
-      </div>
-    </div>
+        </table>`;
+    }
 
-    <!-- BENEFICIOS DISPONIBLES -->
-    <div class="perfil-block">
-      <p class="perfil-section-title">Beneficios disponibles para vos</p>
-      <div class="beneficios-disp">
-        <div class="beneficio-card">
-          <p class="beneficio-tipo">Descuento</p>
-          <p class="beneficio-nombre">10% off</p>
-          <p class="beneficio-pts-req">500 puntos</p>
-          <button class="btn-canjear">Canjear</button>
-        </div>
-        <div class="beneficio-card">
-          <p class="beneficio-tipo">Envío</p>
-          <p class="beneficio-nombre">Envío gratis</p>
-          <p class="beneficio-pts-req">300 puntos</p>
-          <button class="btn-canjear">Canjear</button>
-        </div>
-        <div class="beneficio-card">
-          <p class="beneficio-tipo">Producto</p>
-          <p class="beneficio-nombre">Regalo sorpresa</p>
-          <p class="beneficio-pts-req">800 puntos</p>
-          <button class="btn-canjear">Canjear</button>
-        </div>
-        <div class="beneficio-card">
-          <p class="beneficio-tipo">Experiencia</p>
-          <p class="beneficio-nombre">Clase de maquillaje</p>
-          <p class="beneficio-pts-req">3.000 puntos</p>
-          <button class="btn-canjear" disabled>Puntos insuficientes</button>
-        </div>
-      </div>
-    </div>
+    function renderCompras(compras) {
+      const container = document.getElementById('comprasContainer');
+      if (compras.length === 0) {
+        container.innerHTML = '<div class="empty-state">Todavía no hay compras registradas.</div>';
+        return;
+      }
+      container.innerHTML = `<div class="compras-list">
+        ${compras.map(c => {
+          const prods = Array.isArray(c.productos) ? c.productos : [];
+          const primerProd = prods[0]?.nombre || (c.canal === 'fisica' ? 'Compra en tienda' : 'Compra online');
+          const extra = prods.length > 1 ? `+${prods.length - 1} producto${prods.length > 2 ? 's' : ''} más` : '';
+          return `<div class="compra-item">
+            <span class="compra-fecha">${formatFecha(c.fecha)}</span>
+            <div class="compra-productos">
+              <div class="compra-producto-nombre">${primerProd}</div>
+              ${extra ? `<div class="compra-producto-extra">${extra}</div>` : ''}
+              <div style="margin-top:4px;">
+                <span class="canal-badge ${c.canal === 'fisica' ? 'canal-fisica' : 'canal-online'}">
+                  ${c.canal === 'fisica' ? 'Tienda' : 'Online'}
+                </span>
+              </div>
+            </div>
+            <div>
+              <div class="compra-monto">${formatPesos(c.monto)}</div>
+              ${c.puntos_generados ? `<div class="compra-pts">+${c.puntos_generados} pts</div>` : ''}
+            </div>
+          </div>`;
+        }).join('')}
+      </div>`;
+    }
 
-    <!-- COMPRAS ANTERIORES -->
-    <div class="perfil-block">
-      <p class="perfil-section-title">Compras anteriores</p>
-      <div class="table-wrap">
-        <div class="compras-list">
-          <div class="compra-item">
-            <span class="compra-fecha">24 abr 2026</span>
-            <span class="compra-detalle">Base L'Oréal True Match · Corrector Maybelline Fit Me</span>
-            <span class="compra-monto">$18.400</span>
-          </div>
-          <div class="compra-item">
-            <span class="compra-fecha">10 abr 2026</span>
-            <span class="compra-detalle">Paleta Urban Decay · Máscara L'Oréal Telescopic</span>
-            <span class="compra-monto">$16.200</span>
-          </div>
-          <div class="compra-item">
-            <span class="compra-fecha">22 mar 2026</span>
-            <span class="compra-detalle">Labial Celebrate Nº 12 · Delineador NYX</span>
-            <span class="compra-monto">$9.800</span>
-          </div>
-          <div class="compra-item">
-            <span class="compra-fecha">05 mar 2026</span>
-            <span class="compra-detalle">Polvo Maybelline Fit Me · Iluminador Celebrate</span>
-            <span class="compra-monto">$12.600</span>
-          </div>
-        </div>
-      </div>
-    </div>
+    // ── LOGIN FLOW ──
+    const loginScreen = document.getElementById('loginScreen');
+    const perfilScreen = document.getElementById('perfilScreen');
+    const dniInput = document.getElementById('dniInput');
+    const loginBtn = document.getElementById('loginBtn');
+    const loginError = document.getElementById('loginError');
 
-  </div>
+    // Verificar si hay sesión guardada
+    const dniGuardado = sessionStorage.getItem('club_jazmin_dni');
+    if (dniGuardado) {
+      mostrarCargando();
+      cargarPerfil(dniGuardado).then(clienta => {
+        if (clienta) mostrarPerfil();
+        else { sessionStorage.removeItem('club_jazmin_dni'); mostrarLogin(); }
+      });
+    }
 
-  <footer>
-    <p class="footer-logo">CLUB <em>JAZMÍN</em> DE ROSAS</p>
-    <p class="footer-sub">club.jazminderosas.com.ar</p>
-  </footer>
+    function mostrarLogin() {
+      loginScreen.style.display = 'flex';
+      perfilScreen.classList.remove('visible');
+    }
+    function mostrarPerfil() {
+      loginScreen.style.display = 'none';
+      perfilScreen.classList.add('visible');
+    }
+    function mostrarCargando() {
+      loginScreen.style.display = 'none';
+    }
 
-  <script src="../js/main.js"></script>
+    loginBtn.addEventListener('click', async () => {
+      const dni = dniInput.value.trim().replace(/\./g, '');
+      if (!dni || dni.length < 7) {
+        loginError.textContent = 'Ingresá un DNI válido.';
+        return;
+      }
+      loginBtn.textContent = 'Buscando...';
+      loginBtn.disabled = true;
+      loginError.textContent = '';
+
+      const clienta = await cargarPerfil(dni);
+      if (clienta) {
+        sessionStorage.setItem('club_jazmin_dni', dni);
+        mostrarPerfil();
+      } else {
+        loginError.textContent = 'No encontramos una cuenta con ese DNI. ¿Ya te registraste?';
+        loginBtn.textContent = 'Ver mi perfil';
+        loginBtn.disabled = false;
+      }
+    });
+
+    dniInput.addEventListener('keydown', e => {
+      if (e.key === 'Enter') loginBtn.click();
+    });
+
+    document.getElementById('logoutBtn').addEventListener('click', () => {
+      sessionStorage.removeItem('club_jazmin_dni');
+      mostrarLogin();
+      dniInput.value = '';
+    });
+  </script>
 </body>
 </html>
