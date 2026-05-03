@@ -312,6 +312,92 @@
       .historial-table th:nth-child(3),
       .historial-table td:nth-child(3) { display: none; }
     }
+
+    /* ── PREMIOS ── */
+    .premios-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
+      gap: 12px;
+    }
+    .premio-card {
+      border-radius: 12px;
+      padding: 20px;
+      border: 1px solid;
+      position: relative;
+      overflow: hidden;
+      transition: transform 0.2s ease;
+    }
+    .premio-card:hover { transform: translateY(-2px); }
+    .premio-card.disponible { background: var(--blanco); border-color: var(--rosa); }
+    .premio-card.bloqueado { background: #fafaf9; border-color: var(--borde); }
+    .premio-tipo {
+      font-family: var(--font-body);
+      font-size: 9px;
+      letter-spacing: 0.16em;
+      text-transform: uppercase;
+      margin-bottom: 8px;
+      font-weight: 500;
+    }
+    .premio-card.disponible .premio-tipo { color: var(--rosa); }
+    .premio-card.bloqueado .premio-tipo { color: var(--vison); }
+    .premio-nombre {
+      font-family: var(--font-display);
+      font-size: 17px;
+      font-weight: 600;
+      color: var(--grafito);
+      margin-bottom: 6px;
+      line-height: 1.2;
+    }
+    .premio-card.bloqueado .premio-nombre { color: #999; }
+    .premio-desc {
+      font-family: var(--font-body);
+      font-size: 11px;
+      font-weight: 300;
+      color: var(--vison);
+      line-height: 1.5;
+      margin-bottom: 14px;
+    }
+    .premio-pts-req {
+      font-family: var(--font-display);
+      font-size: 20px;
+      font-weight: 600;
+    }
+    .premio-card.disponible .premio-pts-req { color: var(--grafito); }
+    .premio-card.bloqueado .premio-pts-req { color: #bbb; }
+    .premio-pts-label {
+      font-family: var(--font-body);
+      font-size: 9px;
+      letter-spacing: 0.1em;
+      text-transform: uppercase;
+      display: block;
+      margin-top: 2px;
+    }
+    .premio-card.disponible .premio-pts-label { color: var(--vison); }
+    .premio-card.bloqueado .premio-pts-label { color: #ccc; }
+    .premio-faltan {
+      font-family: var(--font-body);
+      font-size: 10px;
+      color: var(--vison);
+      margin-top: 6px;
+      display: block;
+    }
+    .premio-disponible-tag {
+      display: inline-block;
+      background: var(--rosa);
+      color: var(--grafito);
+      font-size: 9px;
+      font-family: var(--font-body);
+      font-weight: 500;
+      letter-spacing: 0.1em;
+      text-transform: uppercase;
+      padding: 3px 10px;
+      border-radius: 20px;
+      margin-top: 6px;
+    }
+    .tipo-descuento { color: #c52c2e !important; }
+    .tipo-producto { color: #026359 !important; }
+    .tipo-envio { color: #124169 !important; }
+    .tipo-experiencia { color: #a95aaf !important; }
   </style>
 </head>
 <body>
@@ -381,6 +467,19 @@
       <div class="perfil-section">
         <p class="perfil-section-label">Movimientos de puntos</p>
         <div id="historialContainer">
+          <div class="loading">
+            <span class="loading-dot"></span>
+            <span class="loading-dot"></span>
+            <span class="loading-dot"></span>
+          </div>
+        </div>
+      </div>
+
+
+      <!-- PREMIOS -->
+      <div class="perfil-section">
+        <p class="perfil-section-label">Próximos premios</p>
+        <div id="premiosContainer">
           <div class="loading">
             <span class="loading-dot"></span>
             <span class="loading-dot"></span>
@@ -501,6 +600,10 @@
       );
       renderCompras(compras || []);
 
+      // 6. Beneficios / premios
+      const beneficios = await sbGet('beneficios', 'activo=eq.true&select=nombre,descripcion,tipo,puntos_requeridos&order=puntos_requeridos.asc');
+      renderPremios(beneficios || [], puntos);
+
       return clienta;
     }
 
@@ -534,6 +637,34 @@
             `).join('')}
           </tbody>
         </table>`;
+    }
+
+
+    function renderPremios(beneficios, puntosActuales) {
+      const container = document.getElementById('premiosContainer');
+      if (!beneficios || beneficios.length === 0) {
+        container.innerHTML = '<div class="empty-state">No hay premios disponibles por el momento.</div>';
+        return;
+      }
+      const tipoLabel = { descuento: 'Descuento', producto: 'Producto', envio: 'Envío', experiencia: 'Experiencia' };
+      const sorted = [...beneficios].sort((a, b) => a.puntos_requeridos - b.puntos_requeridos);
+      container.innerHTML = `<div class="premios-grid">
+        ${sorted.map(b => {
+          const disponible = puntosActuales >= b.puntos_requeridos;
+          const faltan = b.puntos_requeridos - puntosActuales;
+          return `<div class="premio-card ${disponible ? 'disponible' : 'bloqueado'}">
+            <p class="premio-tipo ${'tipo-' + b.tipo}">${tipoLabel[b.tipo] || b.tipo}</p>
+            <p class="premio-nombre">${b.nombre}</p>
+            <p class="premio-desc">${b.descripcion || ''}</p>
+            <p class="premio-pts-req">${b.puntos_requeridos.toLocaleString('es-AR')}</p>
+            <span class="premio-pts-label">puntos necesarios</span>
+            ${disponible
+              ? '<span class="premio-disponible-tag">✓ Disponible para canjear</span>'
+              : `<span class="premio-faltan">Te faltan ${faltan.toLocaleString('es-AR')} pts</span>`
+            }
+          </div>`;
+        }).join('')}
+      </div>`;
     }
 
     function renderCompras(compras) {
