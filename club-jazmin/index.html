@@ -457,13 +457,50 @@
           return;
         }
 
-        // ── reCAPTCHA v3 ──
-        let recaptchaToken = '';
+        // ── reCAPTCHA v3 — 3 niveles ──
+        btn.textContent = 'Verificando...';
         try {
-          if (typeof grecaptcha !== 'undefined' && 6Ld3MdosAAAAAI0Lhfcud7zl3AqkKDwkhfOkUbiT !== '6Ld3MdosAAAAAI0Lhfcud7zl3AqkKDwkhfOkUbiT') {
-            recaptchaToken = await grecaptcha.execute(6Ld3MdosAAAAAI0Lhfcud7zl3AqkKDwkhfOkUbiT, { action: 'registro' });
+          if (typeof grecaptcha !== 'undefined') {
+            const rcToken = await grecaptcha.execute('6Ld3MdosAAAAAI0Lhfcud7zl3AqkKDwkhfOkUbiT', { action: 'registro' });
+            const rcRes = await fetch('https://qgsdqzqvrbkprbmehzcf.supabase.co/functions/v1/verify-recaptcha', {
+              method: 'POST',
+              headers: {
+                'Content-Type': 'application/json',
+                'apikey': 'sb_publishable_0RGb096UtD0AQYRtukuNwg_zmLf3nwF',
+                'Authorization': 'Bearer sb_publishable_0RGb096UtD0AQYRtukuNwg_zmLf3nwF'
+              },
+              body: JSON.stringify({ token: rcToken })
+            });
+            const rcData = await rcRes.json();
+
+            if (rcData.nivel === 'bloqueado') {
+              // Bloqueo silencioso — simulamos éxito para no revelar el sistema
+              registroForm.style.display = 'none';
+              document.getElementById('registroSuccess').classList.add('visible');
+              btn.textContent = 'Unirme al Club';
+              btn.disabled = false;
+              return;
+            }
+
+            if (rcData.nivel === 'reintento') {
+              btn.textContent = 'Unirme al Club';
+              btn.disabled = false;
+              btn.style.background = '#c52c2e';
+              setTimeout(() => { btn.style.background = ''; }, 4000);
+              const old = registroForm.querySelector('.rc-msg');
+              if (old) old.remove();
+              const msg = document.createElement('p');
+              msg.className = 'rc-msg';
+              msg.style.cssText = 'text-align:center;color:#c52c2e;font-size:12px;margin-top:10px;font-family:system-ui;';
+              msg.textContent = 'Hubo un problema al procesar tu solicitud. Intentá de nuevo en unos minutos.';
+              registroForm.querySelector('.btn-dark').after(msg);
+              return;
+            }
+            // nivel === 'permitido' o error_tecnico → continuar normalmente
           }
-        } catch(e) { console.log('reCAPTCHA no disponible:', e); }
+        } catch(e) {
+          console.log('reCAPTCHA error (continuando):', e);
+        }
 
         btn.textContent = 'Guardando...';
 
