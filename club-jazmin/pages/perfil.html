@@ -789,10 +789,161 @@
       text-transform: uppercase;
     }
 
+
+    /* ── RECOMENDACIONES ── */
+    .rec-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+      gap: 12px;
+    }
+    .rec-card {
+      background: var(--blanco);
+      border: 0.5px solid var(--borde);
+      border-radius: 12px;
+      padding: 18px;
+      position: relative;
+      overflow: hidden;
+      transition: transform 0.2s;
+    }
+    .rec-card:hover { transform: translateY(-3px); box-shadow: 0 8px 24px rgba(28,28,28,0.07); }
+    .rec-motivo {
+      font-family: var(--font-body);
+      font-size: 9px;
+      letter-spacing: 0.14em;
+      text-transform: uppercase;
+      margin-bottom: 8px;
+      font-weight: 500;
+    }
+    .rec-motivo.piel    { color: #026359; }
+    .rec-motivo.similar { color: #124169; }
+    .rec-motivo.cross   { color: #a95aaf; }
+    .rec-categoria {
+      font-family: var(--font-body);
+      font-size: 9px;
+      letter-spacing: 0.1em;
+      text-transform: uppercase;
+      color: var(--vison);
+      margin-bottom: 4px;
+    }
+    .rec-nombre {
+      font-family: var(--font-display);
+      font-size: 16px;
+      font-weight: 600;
+      color: var(--grafito);
+      margin-bottom: 3px;
+      line-height: 1.2;
+    }
+    .rec-marca {
+      font-family: var(--font-body);
+      font-size: 11px;
+      color: var(--vison);
+      margin-bottom: 8px;
+    }
+    .rec-desc {
+      font-family: var(--font-body);
+      font-size: 11px;
+      font-weight: 300;
+      color: var(--vison);
+      line-height: 1.5;
+    }
+    .rec-badge {
+      position: absolute;
+      top: 12px;
+      right: 12px;
+      font-size: 16px;
+    }
+    @media (max-width: 600px) {
+      .rec-grid { grid-template-columns: 1fr 1fr; }
+    }
     @media (max-width: 600px) {
       .sb-productos-grid { grid-template-columns: repeat(2, 1fr); }
       .sb-form-grid { grid-template-columns: 1fr; }
       .sb-modal { padding: 24px 16px 32px; }
+    }
+
+    /* ══════════════════════════════════════
+       RECOMENDACIONES
+    ══════════════════════════════════════ */
+    .reco-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+      gap: 12px;
+    }
+    .reco-card {
+      background: var(--blanco);
+      border: 0.5px solid var(--borde);
+      border-radius: 12px;
+      padding: 18px;
+      position: relative;
+      transition: transform 0.2s, box-shadow 0.2s;
+    }
+    .reco-card:hover { transform: translateY(-2px); box-shadow: 0 4px 20px rgba(0,0,0,0.06); }
+    .reco-motivo {
+      font-family: var(--font-body);
+      font-size: 9px;
+      letter-spacing: 0.14em;
+      text-transform: uppercase;
+      margin-bottom: 8px;
+      font-weight: 500;
+    }
+    .reco-motivo-piel { color: #026359; }
+    .reco-motivo-similar { color: #124169; }
+    .reco-motivo-cross { color: #a95aaf; }
+    .reco-categoria {
+      font-family: var(--font-body);
+      font-size: 9px;
+      color: var(--vison);
+      letter-spacing: 0.1em;
+      text-transform: uppercase;
+      margin-bottom: 4px;
+    }
+    .reco-nombre {
+      font-family: var(--font-display);
+      font-size: 16px;
+      font-weight: 600;
+      color: var(--grafito);
+      margin-bottom: 2px;
+      line-height: 1.2;
+    }
+    .reco-marca {
+      font-family: var(--font-body);
+      font-size: 11px;
+      color: var(--vison);
+      margin-bottom: 10px;
+    }
+    .reco-razon {
+      font-family: var(--font-body);
+      font-size: 11px;
+      font-weight: 300;
+      color: var(--vison);
+      line-height: 1.5;
+      border-top: 0.5px solid var(--borde);
+      padding-top: 8px;
+      margin-top: 4px;
+    }
+    .reco-popularity {
+      display: flex;
+      align-items: center;
+      gap: 4px;
+      margin-top: 8px;
+    }
+    .reco-pop-bar {
+      flex: 1;
+      height: 2px;
+      background: var(--borde);
+      border-radius: 2px;
+      overflow: hidden;
+    }
+    .reco-pop-fill {
+      height: 100%;
+      background: var(--rosa);
+      border-radius: 2px;
+    }
+    .reco-pop-label {
+      font-family: var(--font-body);
+      font-size: 9px;
+      color: var(--vison);
+      white-space: nowrap;
     }
   </style>
 </head>
@@ -871,6 +1022,19 @@
         </div>
       </div>
 
+
+
+      <!-- RECOMENDACIONES -->
+      <div class="perfil-section">
+        <p class="perfil-section-label">Para vos</p>
+        <div id="recoContainer">
+          <div class="loading">
+            <span class="loading-dot"></span>
+            <span class="loading-dot"></span>
+            <span class="loading-dot"></span>
+          </div>
+        </div>
+      </div>
 
       <!-- PREMIOS -->
       <div class="perfil-section">
@@ -995,12 +1159,17 @@
         `clienta_id=eq.${clienta.id}&select=canal,monto,productos,puntos_generados,fecha&order=fecha.desc&limit=10`
       );
       renderCompras(compras || []);
+      window._sbCompras = compras || [];
 
       // 6. Beneficios / premios
       const beneficios = await sbGet('beneficios', 'activo=eq.true&select=nombre,descripcion,tipo,puntos_requeridos&order=puntos_requeridos.asc');
       renderPremios(beneficios || [], puntos);
 
-      // 7. Skinbook
+      // 7. Recomendaciones personalizadas
+      const sbProductosPerfil = await sbGet('skinbook_productos', `clienta_id=eq.${clienta.id}&select=categoria`);
+      await generarRecomendaciones(clienta, compras || [], sbProductosPerfil || []);
+
+      // 8. Skinbook
       await cargarSkinbook(clienta.id, nombre, puntos);
 
       return clienta;
@@ -1097,6 +1266,192 @@
       </div>`;
     }
 
+
+    // ══════════════════════════════════════
+    // MOTOR DE RECOMENDACIONES
+    // 3 capas: tipo de piel, perfil similar, cross-selling
+    // ══════════════════════════════════════
+
+    async function cargarRecomendaciones(clienta, compras, sbProductos) {
+      const container = document.getElementById('recoContainer');
+      const recomendaciones = [];
+
+      try {
+        // ── Datos de la clienta ──
+        const tipoPiel = clienta.tipo_piel || null;
+        const estiloMaquillaje = clienta.estilo_maquillaje || null;
+
+        // Categorías que ya tiene la clienta (de compras + skinbook)
+        const categoriasCompradas = new Set();
+        (compras || []).forEach(c => {
+          (c.productos || []).forEach(p => {
+            if (p.nombre) {
+              // Detectar categoría básica por nombre del producto
+              const n = p.nombre.toLowerCase();
+              if (n.includes('base') || n.includes('fondo')) categoriasCompradas.add('base');
+              if (n.includes('corrector')) categoriasCompradas.add('corrector');
+              if (n.includes('labial') || n.includes('lip')) categoriasCompradas.add('labial');
+              if (n.includes('máscara') || n.includes('mascara') || n.includes('rimel')) categoriasCompradas.add('mascara');
+              if (n.includes('sombra') || n.includes('eyeshadow')) categoriasCompradas.add('sombra');
+              if (n.includes('rubor') || n.includes('blush')) categoriasCompradas.add('rubor');
+              if (n.includes('polvo') || n.includes('powder')) categoriasCompradas.add('polvo');
+              if (n.includes('primer')) categoriasCompradas.add('primer');
+              if (n.includes('delineador') || n.includes('liner')) categoriasCompradas.add('delineador');
+              if (n.includes('iluminador') || n.includes('highlighter')) categoriasCompradas.add('iluminador');
+              if (n.includes('contorno') || n.includes('bronzer')) categoriasCompradas.add('contorno');
+              if (n.includes('fijador') || n.includes('setting')) categoriasCompradas.add('fijador');
+              if (n.includes('skincare') || n.includes('crema') || n.includes('serum') || n.includes('sérum')) categoriasCompradas.add('skincare');
+              if (n.includes('protector') || n.includes('fps') || n.includes('spf')) categoriasCompradas.add('protector');
+            }
+          });
+        });
+
+        // Agregar categorías del Skinbook
+        (sbProductos || []).forEach(p => {
+          if (p.categoria) categoriasCompradas.add(p.categoria);
+        });
+
+        // ── CAPA 1: Cross-selling ──
+        if (categoriasCompradas.size > 0) {
+          const categoriasArr = [...categoriasCompradas];
+          const crossReglas = await sbGet('cross_selling_reglas',
+            `categoria_origen=in.(${categoriasArr.join(',')})&order=prioridad.asc&limit=20`
+          );
+
+          const categoriasCross = new Set();
+          (crossReglas || []).forEach(r => {
+            if (!categoriasCompradas.has(r.categoria_destino)) {
+              categoriasCross.add(r.categoria_destino);
+            }
+          });
+
+          // Buscar productos del catálogo para esas categorías
+          if (categoriasCross.size > 0) {
+            const prodsCross = await sbGet('catalogo_productos',
+              `categoria=in.(${[...categoriasCross].join(',')})&activo=eq.true&limit=10`
+            );
+            (prodsCross || []).slice(0, 3).forEach(p => {
+              const origenCategoria = crossReglas.find(r => r.categoria_destino === p.categoria)?.categoria_origen;
+              recomendaciones.push({
+                ...p,
+                motivo: 'cross',
+                motivoLabel: 'Complementa tu rutina',
+                razon: origenCategoria
+                  ? `Las clientas que tienen ${origenCategoria} también eligen este producto`
+                  : 'Ideal para complementar tu rutina actual',
+                popularidad: 75
+              });
+            });
+          }
+        }
+
+        // ── CAPA 2: Tipo de piel ──
+        if (tipoPiel) {
+          const prodsPiel = await sbGet('catalogo_productos',
+            `activo=eq.true&limit=20`
+          );
+          const filtradosPiel = (prodsPiel || []).filter(p =>
+            p.tipo_piel && Array.isArray(p.tipo_piel) && p.tipo_piel.includes(tipoPiel)
+          );
+          filtradosPiel.slice(0, 2).forEach(p => {
+            if (!recomendaciones.find(r => r.id === p.id)) {
+              recomendaciones.push({
+                ...p,
+                motivo: 'piel',
+                motivoLabel: 'Para tu tipo de piel',
+                razon: `Recomendado para piel ${tipoPiel}`,
+                popularidad: 85
+              });
+            }
+          });
+        }
+
+        // ── CAPA 3: Perfil similar (otras clientas con mismo tipo piel + estilo) ──
+        if (tipoPiel || estiloMaquillaje) {
+          let filtroSimilar = 'select=id&puntos_actuales=gt.0';
+          if (tipoPiel) filtroSimilar += `&tipo_piel=eq.${tipoPiel}`;
+          if (estiloMaquillaje) filtroSimilar += `&estilo_maquillaje=eq.${estiloMaquillaje}`;
+          filtroSimilar += `&id=neq.${clienta.id}&limit=20`;
+
+          const clientasSimilares = await sbGet('clientas', filtroSimilar);
+
+          if (clientasSimilares?.length > 0) {
+            const idsStr = clientasSimilares.map(c => c.id).join(',');
+            const comprasSimilares = await sbGet('compras',
+              `clienta_id=in.(${idsStr})&select=productos&limit=50`
+            );
+
+            // Contar frecuencia de productos
+            const frecuencia = {};
+            (comprasSimilares || []).forEach(c => {
+              (c.productos || []).forEach(p => {
+                if (p.nombre) {
+                  const key = p.nombre.toLowerCase();
+                  frecuencia[key] = (frecuencia[key] || { nombre: p.nombre, count: 0 });
+                  frecuencia[key].count++;
+                }
+              });
+            });
+
+            // Top 3 productos más comprados por clientas similares que ella no tiene
+            const topSimilares = Object.values(frecuencia)
+              .filter(p => {
+                const n = p.nombre.toLowerCase();
+                // Verificar que no lo tenga ya
+                return ![...categoriasCompradas].some(cat => n.includes(cat));
+              })
+              .sort((a, b) => b.count - a.count)
+              .slice(0, 2);
+
+            topSimilares.forEach(p => {
+              recomendaciones.push({
+                nombre: p.nombre,
+                marca: 'Jazmín de Rosas',
+                categoria: 'popular',
+                motivo: 'similar',
+                motivoLabel: 'Clientas como vos',
+                razon: `${p.count} clienta${p.count > 1 ? 's' : ''} con tu perfil lo eligió`,
+                popularidad: Math.min(95, 50 + p.count * 10)
+              });
+            });
+          }
+        }
+
+        // ── Renderizar ──
+        if (recomendaciones.length === 0) {
+          container.innerHTML = `<div class="empty-state">
+            Seguí comprando y completando tu Skinbook para recibir recomendaciones personalizadas.
+          </div>`;
+          return;
+        }
+
+        const motivoClass = { cross: 'reco-motivo-cross', piel: 'reco-motivo-piel', similar: 'reco-motivo-similar' };
+
+        container.innerHTML = `<div class="reco-grid">
+          ${recomendaciones.slice(0, 6).map(r => `
+            <div class="reco-card">
+              <p class="reco-motivo ${motivoClass[r.motivo] || ''}">${r.motivoLabel}</p>
+              <p class="reco-categoria">${r.categoria}</p>
+              <p class="reco-nombre">${r.nombre}</p>
+              <p class="reco-marca">${r.marca || ''}</p>
+              <p class="reco-razon">${r.razon}</p>
+              ${r.popularidad ? `
+                <div class="reco-popularity">
+                  <div class="reco-pop-bar">
+                    <div class="reco-pop-fill" style="width:${r.popularidad}%"></div>
+                  </div>
+                  <span class="reco-pop-label">${r.popularidad}% afinidad</span>
+                </div>` : ''}
+            </div>
+          `).join('')}
+        </div>`;
+
+      } catch(err) {
+        console.error('Error recomendaciones:', err);
+        container.innerHTML = '<div class="empty-state">No pudimos cargar las recomendaciones.</div>';
+      }
+    }
+
     // ── LOGIN FLOW ──
     const loginScreen = document.getElementById('loginScreen');
     const perfilScreen = document.getElementById('perfilScreen');
@@ -1151,6 +1506,190 @@
       if (e.key === 'Enter') loginBtn.click();
     });
 
+
+
+    // ══════════════════════════════════════
+    // MOTOR DE RECOMENDACIONES
+    // ══════════════════════════════════════
+
+    async function generarRecomendaciones(clienta, compras, sbProductos) {
+      const container = document.getElementById('recoContainer');
+      const recomendaciones = [];
+
+      const tipoPiel     = clienta.tipo_piel;
+      const estiloMaquillaje = clienta.estilo_maquillaje;
+
+      // Categorías que ya tiene la clienta (de compras + skinbook)
+      const categoriasQueYaTiene = new Set();
+      compras.forEach(c => {
+        const prods = Array.isArray(c.productos) ? c.productos : [];
+        prods.forEach(p => {
+          if (p.nombre) categoriasQueYaTiene.add((p.nombre || '').toLowerCase());
+        });
+      });
+      sbProductos.forEach(p => {
+        if (p.categoria) categoriasQueYaTiene.add(p.categoria);
+      });
+
+      // Extraer categorías de las compras
+      const categoriasCompradas = new Set();
+      compras.forEach(c => {
+        const prods = Array.isArray(c.productos) ? c.productos : [];
+        prods.forEach(p => {
+          const nombre = (p.nombre || '').toLowerCase();
+          // Mapear nombres de productos a categorías
+          if (nombre.includes('base') || nombre.includes('foundation')) categoriasCompradas.add('base');
+          if (nombre.includes('corrector') || nombre.includes('concealer')) categoriasCompradas.add('corrector');
+          if (nombre.includes('labial') || nombre.includes('lip')) categoriasCompradas.add('labial');
+          if (nombre.includes('máscara') || nombre.includes('mascara') || nombre.includes('rimel')) categoriasCompradas.add('mascara');
+          if (nombre.includes('sombra') || nombre.includes('shadow') || nombre.includes('paleta')) categoriasCompradas.add('sombra');
+          if (nombre.includes('rubor') || nombre.includes('blush')) categoriasCompradas.add('rubor');
+          if (nombre.includes('iluminador') || nombre.includes('highlight')) categoriasCompradas.add('iluminador');
+          if (nombre.includes('delineador') || nombre.includes('liner')) categoriasCompradas.add('delineador');
+          if (nombre.includes('polvo') || nombre.includes('powder')) categoriasCompradas.add('polvo');
+          if (nombre.includes('primer')) categoriasCompradas.add('primer');
+          if (nombre.includes('contorno') || nombre.includes('bronzer')) categoriasCompradas.add('contorno');
+        });
+      });
+
+      // ── CAPA 1: Cross-selling ──
+      try {
+        const reglas = await sbGet('cross_selling_reglas',
+          `categoria_origen=in.(${[...categoriasCompradas].join(',') || 'base'})&order=prioridad.asc&limit=20`
+        );
+        const yaRecomendado = new Set();
+        const CATALOGO_CROSS = {
+          corrector:   { nombre: 'Corrector', desc: 'El complemento ideal para tu base', emoji: '✨', marca: 'Maybelline / L'Oréal' },
+          polvo:       { nombre: 'Polvo fijador', desc: 'Para que tu maquillaje dure todo el día', emoji: '💫', marca: 'Revlon / Rimmel' },
+          primer:      { nombre: 'Primer', desc: 'La base perfecta para que todo dure más', emoji: '🌟', marca: 'NYX / L'Oréal' },
+          fijador:     { nombre: 'Fijador en spray', desc: 'Sella el maquillaje y lo prolonga', emoji: '💨', marca: 'Urban Decay / NYX' },
+          delineador:  { nombre: 'Delineador', desc: 'Para definir y potenciar tu mirada', emoji: '👁️', marca: 'NYX / L'Oréal' },
+          rubor:       { nombre: 'Rubor / Blush', desc: 'Dale vida a tu rostro con color natural', emoji: '🌸', marca: 'Milani / e.l.f.' },
+          iluminador:  { nombre: 'Iluminador', desc: 'Ese glow natural que todas quieren', emoji: '✨', marca: 'Celebrate / Wet n Wild' },
+          sombra:      { nombre: 'Paleta de sombras', desc: 'Para completar cualquier look', emoji: '🎨', marca: 'NYX / Morphe' },
+          contorno:    { nombre: 'Contorno', desc: 'Define y esculpe tu rostro', emoji: '🔶', marca: 'Anastasia / NYX' },
+          mascara:     { nombre: 'Máscara de pestañas', desc: 'Para una mirada más intensa', emoji: '👁️', marca: 'L'Oréal / Maybelline' },
+          skincare:    { nombre: 'Rutina de skincare', desc: 'La base de todo buen maquillaje', emoji: '💧', marca: 'Neutrogena / CeraVe' },
+          protector:   { nombre: 'Protector solar', desc: 'Imprescindible en tu rutina diaria', emoji: '☀️', marca: 'Neutrogena / La Roche' },
+        };
+
+        (reglas || []).forEach(r => {
+          const dest = r.categoria_destino;
+          if (!yaRecomendado.has(dest) && CATALOGO_CROSS[dest]) {
+            yaRecomendado.add(dest);
+            recomendaciones.push({
+              tipo: 'cross',
+              motivoLabel: 'Completa tu rutina',
+              categoria: dest,
+              ...CATALOGO_CROSS[dest]
+            });
+          }
+        });
+      } catch(e) { console.log('Error cross-selling:', e); }
+
+      // ── CAPA 2: Por tipo de piel ──
+      const RECO_POR_PIEL = {
+        seca: [
+          { categoria: 'base', nombre: 'Base hidratante', desc: 'Formuladas para pieles secas, con ácido hialurónico', emoji: '💧', marca: 'L'Oréal True Match / Revlon' },
+          { categoria: 'skincare', nombre: 'Crema hidratante', desc: 'La hidratación es la base de todo', emoji: '🌊', marca: 'Neutrogena / Nivea' },
+          { categoria: 'primer', nombre: 'Primer hidratante', desc: 'Prepara la piel seca antes del maquillaje', emoji: '✨', marca: 'NYX / e.l.f.' },
+        ],
+        grasa: [
+          { categoria: 'polvo', nombre: 'Polvo matificante', desc: 'Control de brillo para pieles grasas', emoji: '🌿', marca: 'Maybelline Fit Me / L'Oréal' },
+          { categoria: 'primer', nombre: 'Primer matificante', desc: 'Controla el sebo y prolonga el maquillaje', emoji: '🔬', marca: 'NYX / Smashbox' },
+          { categoria: 'fijador', nombre: 'Fijador matificante', desc: 'Mantiene el maquillaje sin brillo todo el día', emoji: '💪', marca: 'Urban Decay All Nighter' },
+        ],
+        mixta: [
+          { categoria: 'polvo', nombre: 'Polvo traslúcido', desc: 'Para equilibrar zonas grasas sin resecar', emoji: '⚖️', marca: 'Laura Mercier / L'Oréal' },
+          { categoria: 'base', nombre: 'Base para piel mixta', desc: 'Balance perfecto entre hidratación y control', emoji: '🌸', marca: 'Maybelline Fit Me / Rimmel' },
+        ],
+        sensible: [
+          { categoria: 'base', nombre: 'Base sin fragancia', desc: 'Formulada para pieles sensibles, sin irritantes', emoji: '🌿', marca: 'Clinique / Almay' },
+          { categoria: 'skincare', nombre: 'Skincare para sensible', desc: 'Productos suaves para pieles reactivas', emoji: '💆', marca: 'La Roche-Posay / Avène' },
+        ],
+      };
+
+      if (tipoPiel && RECO_POR_PIEL[tipoPiel]) {
+        RECO_POR_PIEL[tipoPiel].slice(0, 2).forEach(r => {
+          recomendaciones.push({ tipo: 'piel', motivoLabel: `Para piel ${tipoPiel}`, ...r });
+        });
+      }
+
+      // ── CAPA 3: Perfil similar (clientas con mismo tipo de piel + estilo) ──
+      try {
+        if (tipoPiel) {
+          const filtroSimilar = estiloMaquillaje
+            ? `tipo_piel=eq.${tipoPiel}&estilo_maquillaje=eq.${estiloMaquillaje}&select=id`
+            : `tipo_piel=eq.${tipoPiel}&select=id`;
+          const similares = await sbGet('clientas', filtroSimilar + '&limit=50');
+          const idsSimilares = (similares || []).map(s => s.id).filter(id => id !== clienta.id);
+
+          if (idsSimilares.length > 0) {
+            const comprasSimilares = await sbGet('compras',
+              `clienta_id=in.(${idsSimilares.slice(0,20).join(',')})&select=productos&limit=100`
+            );
+
+            // Contar frecuencia de productos
+            const freq = {};
+            (comprasSimilares || []).forEach(c => {
+              const prods = Array.isArray(c.productos) ? c.productos : [];
+              prods.forEach(p => {
+                if (p.nombre) {
+                  const key = p.nombre;
+                  freq[key] = (freq[key] || 0) + 1;
+                }
+              });
+            });
+
+            // Top 2 productos más comprados por similares que ella no tiene
+            const topSimilares = Object.entries(freq)
+              .filter(([nombre]) => !categoriasQueYaTiene.has(nombre.toLowerCase()))
+              .sort((a, b) => b[1] - a[1])
+              .slice(0, 2);
+
+            topSimilares.forEach(([nombre, count]) => {
+              recomendaciones.push({
+                tipo: 'similar',
+                motivoLabel: `${count} clientas como vos lo eligen`,
+                categoria: 'producto',
+                nombre,
+                desc: `Popular entre clientas con piel ${tipoPiel}`,
+                emoji: '👥',
+                marca: ''
+              });
+            });
+          }
+        }
+      } catch(e) { console.log('Error similares:', e); }
+
+      // Mostrar máximo 6 recomendaciones, priorizando cross > piel > similar
+      const orden = ['cross', 'piel', 'similar'];
+      const final = [];
+      orden.forEach(tipo => {
+        recomendaciones.filter(r => r.tipo === tipo).slice(0, 3).forEach(r => {
+          if (final.length < 6) final.push(r);
+        });
+      });
+
+      if (final.length === 0) {
+        container.innerHTML = '<div class="empty-state">Hacé más compras para recibir recomendaciones personalizadas.</div>';
+        return;
+      }
+
+      const motivoClass = { cross: 'cross', piel: 'piel', similar: 'similar' };
+      container.innerHTML = `<div class="rec-grid">
+        ${final.map(r => `
+          <div class="rec-card">
+            <span class="rec-badge">${r.emoji || '✨'}</span>
+            <p class="rec-motivo ${motivoClass[r.tipo]}">${r.motivoLabel}</p>
+            <p class="rec-categoria">${r.categoria}</p>
+            <p class="rec-nombre">${r.nombre}</p>
+            ${r.marca ? `<p class="rec-marca">${r.marca}</p>` : ''}
+            <p class="rec-desc">${r.desc}</p>
+          </div>
+        `).join('')}
+      </div>`;
+    }
 
     // ══════════════════════════════════════
     // SKINBOOK
