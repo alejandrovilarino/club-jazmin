@@ -398,6 +398,402 @@
     .tipo-producto { color: #026359 !important; }
     .tipo-envio { color: #124169 !important; }
     .tipo-experiencia { color: #a95aaf !important; }
+
+    /* ══════════════════════════════════════
+       SKINBOOK
+    ══════════════════════════════════════ */
+
+    /* Nivel Skinbook badge */
+    .sb-nivel-card {
+      background: var(--grafito);
+      border-radius: 14px;
+      padding: 24px;
+      display: flex;
+      align-items: center;
+      gap: 16px;
+      margin-bottom: 24px;
+    }
+    .sb-nivel-emoji { font-size: 32px; flex-shrink: 0; }
+    .sb-nivel-info { flex: 1; }
+    .sb-nivel-nombre {
+      font-family: var(--font-display);
+      font-size: 22px;
+      font-weight: 600;
+      color: var(--tiza);
+      margin-bottom: 3px;
+    }
+    .sb-nivel-desc {
+      font-family: var(--font-body);
+      font-size: 12px;
+      font-weight: 300;
+      color: var(--vison);
+      margin-bottom: 10px;
+    }
+    .sb-nivel-progress {
+      display: flex;
+      gap: 12px;
+      font-family: var(--font-body);
+      font-size: 10px;
+      color: var(--vison);
+      letter-spacing: 0.06em;
+    }
+    .sb-nivel-stat strong { color: var(--rosa); font-size: 14px; display: block; font-family: var(--font-display); }
+    .sb-next-nivel {
+      font-family: var(--font-body);
+      font-size: 9px;
+      letter-spacing: 0.1em;
+      text-transform: uppercase;
+      color: var(--vison);
+      padding: 4px 10px;
+      border: 1px solid #3a3a3a;
+      border-radius: 20px;
+      white-space: nowrap;
+    }
+
+    /* Share card */
+    .sb-share-card {
+      border: 1px solid var(--borde);
+      border-radius: 14px;
+      padding: 20px;
+      text-align: center;
+      margin-bottom: 24px;
+      background: var(--blanco);
+    }
+    .sb-share-title {
+      font-family: var(--font-display);
+      font-size: 18px;
+      font-weight: 600;
+      margin-bottom: 6px;
+    }
+    .sb-share-sub {
+      font-family: var(--font-body);
+      font-size: 12px;
+      font-weight: 300;
+      color: var(--vison);
+      margin-bottom: 14px;
+      line-height: 1.5;
+    }
+    .sb-share-btn {
+      font-family: var(--font-body);
+      font-size: 10px;
+      letter-spacing: 0.14em;
+      text-transform: uppercase;
+      padding: 10px 20px;
+      border-radius: 4px;
+      border: 1px solid var(--grafito);
+      background: var(--grafito);
+      color: var(--tiza);
+      cursor: pointer;
+      transition: var(--transition, 0.3s);
+    }
+    .sb-share-btn:hover { background: #2e2e2e; }
+
+    /* Tabs */
+    .sb-tabs {
+      display: flex;
+      gap: 0;
+      border-bottom: 1px solid var(--borde);
+      margin-bottom: 24px;
+      overflow-x: auto;
+    }
+    .sb-tab {
+      font-family: var(--font-body);
+      font-size: 11px;
+      letter-spacing: 0.12em;
+      text-transform: uppercase;
+      padding: 12px 20px;
+      border: none;
+      background: none;
+      color: var(--vison);
+      cursor: pointer;
+      border-bottom: 2px solid transparent;
+      white-space: nowrap;
+      transition: color 0.2s, border-color 0.2s;
+    }
+    .sb-tab.active { color: var(--grafito); border-bottom-color: var(--rosa); }
+    .sb-tab-content { display: none; }
+    .sb-tab-content.active { display: block; }
+
+    /* Grid de productos */
+    .sb-productos-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(160px, 1fr));
+      gap: 12px;
+      margin-bottom: 20px;
+    }
+    .sb-producto-card {
+      background: var(--blanco);
+      border: 0.5px solid var(--borde);
+      border-radius: 12px;
+      padding: 16px;
+      position: relative;
+      transition: transform 0.2s;
+    }
+    .sb-producto-card:hover { transform: translateY(-2px); }
+    .sb-prod-categoria {
+      font-family: var(--font-body);
+      font-size: 9px;
+      letter-spacing: 0.14em;
+      text-transform: uppercase;
+      color: var(--vison);
+      margin-bottom: 6px;
+    }
+    .sb-prod-nombre {
+      font-family: var(--font-display);
+      font-size: 15px;
+      font-weight: 600;
+      color: var(--grafito);
+      margin-bottom: 2px;
+      line-height: 1.2;
+    }
+    .sb-prod-marca {
+      font-family: var(--font-body);
+      font-size: 11px;
+      color: var(--vison);
+      margin-bottom: 8px;
+    }
+    .sb-prod-stars { color: var(--amarillo); font-size: 11px; margin-bottom: 4px; }
+    .sb-prod-estado {
+      font-size: 9px;
+      font-family: var(--font-body);
+      padding: 2px 8px;
+      border-radius: 20px;
+      letter-spacing: 0.08em;
+    }
+    .estado-usando { background: #e6f5f0; color: #026359; }
+    .estado-usado { background: #f5f0eb; color: var(--vison); }
+    .estado-quiero_probar { background: #f7e8f0; color: var(--malva); }
+    .sb-prod-jazmin {
+      position: absolute;
+      top: 10px;
+      right: 10px;
+      font-size: 9px;
+      background: var(--rosa);
+      color: var(--grafito);
+      padding: 2px 6px;
+      border-radius: 20px;
+      font-family: var(--font-body);
+      letter-spacing: 0.06em;
+    }
+
+    /* Botón agregar producto */
+    .sb-add-btn {
+      width: 100%;
+      padding: 14px;
+      border: 1.5px dashed var(--borde);
+      border-radius: 12px;
+      background: transparent;
+      font-family: var(--font-body);
+      font-size: 11px;
+      letter-spacing: 0.12em;
+      text-transform: uppercase;
+      color: var(--vison);
+      cursor: pointer;
+      transition: border-color 0.2s, color 0.2s;
+      margin-bottom: 24px;
+    }
+    .sb-add-btn:hover { border-color: var(--rosa); color: var(--grafito); }
+
+    /* Modal agregar producto */
+    .sb-modal-overlay {
+      display: none;
+      position: fixed;
+      inset: 0;
+      background: rgba(28,28,28,0.85);
+      z-index: 200;
+      align-items: flex-end;
+      justify-content: center;
+    }
+    .sb-modal-overlay.open { display: flex; }
+    .sb-modal {
+      background: var(--tiza);
+      border-radius: 20px 20px 0 0;
+      padding: 28px 24px 40px;
+      width: 100%;
+      max-width: 520px;
+      max-height: 90vh;
+      overflow-y: auto;
+      animation: slide-up 0.3s ease;
+    }
+    @keyframes slide-up {
+      from { transform: translateY(40px); opacity: 0; }
+      to { transform: translateY(0); opacity: 1; }
+    }
+    .sb-modal-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      margin-bottom: 24px;
+    }
+    .sb-modal-title {
+      font-family: var(--font-display);
+      font-size: 22px;
+      font-weight: 600;
+    }
+    .sb-modal-close {
+      background: none;
+      border: none;
+      font-size: 20px;
+      cursor: pointer;
+      color: var(--vison);
+      padding: 4px;
+    }
+    .sb-form-group { margin-bottom: 16px; }
+    .sb-label {
+      display: block;
+      font-family: var(--font-body);
+      font-size: 10px;
+      letter-spacing: 0.12em;
+      text-transform: uppercase;
+      color: var(--vison);
+      margin-bottom: 6px;
+    }
+    .sb-input, .sb-select {
+      width: 100%;
+      box-sizing: border-box;
+      border: 1px solid var(--borde);
+      border-radius: 6px;
+      padding: 11px 14px;
+      font-family: var(--font-body);
+      font-size: 14px;
+      font-weight: 300;
+      background: var(--blanco);
+      color: var(--grafito);
+      transition: border-color 0.2s;
+    }
+    .sb-input:focus, .sb-select:focus { outline: none; border-color: var(--rosa); }
+    .sb-stars-select {
+      display: flex;
+      gap: 8px;
+      margin-top: 4px;
+    }
+    .sb-star-btn {
+      font-size: 22px;
+      background: none;
+      border: none;
+      cursor: pointer;
+      color: var(--borde);
+      transition: color 0.15s;
+      padding: 0;
+      line-height: 1;
+    }
+    .sb-star-btn.active { color: var(--amarillo); }
+    .sb-form-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
+    .sb-submit-btn {
+      width: 100%;
+      padding: 14px;
+      background: var(--grafito);
+      color: var(--tiza);
+      border: none;
+      border-radius: 6px;
+      font-family: var(--font-body);
+      font-size: 11px;
+      letter-spacing: 0.16em;
+      text-transform: uppercase;
+      cursor: pointer;
+      margin-top: 8px;
+      transition: background 0.2s;
+    }
+    .sb-submit-btn:hover { background: #2e2e2e; }
+    .sb-submit-btn:disabled { opacity: 0.5; cursor: not-allowed; }
+
+    /* Reseñas */
+    .sb-reseña-card {
+      background: var(--blanco);
+      border: 0.5px solid var(--borde);
+      border-radius: 12px;
+      padding: 20px;
+      margin-bottom: 10px;
+    }
+    .sb-reseña-prod {
+      font-family: var(--font-display);
+      font-size: 17px;
+      font-weight: 600;
+      margin-bottom: 4px;
+    }
+    .sb-reseña-marca {
+      font-family: var(--font-body);
+      font-size: 11px;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+      color: var(--vison);
+      margin-bottom: 10px;
+    }
+    .sb-reseña-preguntas { margin-top: 12px; }
+    .sb-reseña-qa {
+      border-top: 0.5px solid var(--borde);
+      padding-top: 8px;
+      margin-top: 8px;
+    }
+    .sb-reseña-pregunta {
+      font-family: var(--font-body);
+      font-size: 11px;
+      color: var(--vison);
+      margin-bottom: 3px;
+    }
+    .sb-reseña-respuesta {
+      font-family: var(--font-body);
+      font-size: 13px;
+      color: var(--grafito);
+    }
+    .sb-pts-ganados {
+      display: inline-block;
+      background: #e6f5f0;
+      color: #026359;
+      font-size: 10px;
+      font-family: var(--font-body);
+      padding: 3px 10px;
+      border-radius: 20px;
+      margin-top: 10px;
+    }
+
+    /* Imagen compartir */
+    .sb-share-preview {
+      background: var(--grafito);
+      border-radius: 14px;
+      padding: 24px;
+      text-align: center;
+      margin-bottom: 16px;
+    }
+    .sb-share-preview-nombre {
+      font-family: var(--font-display);
+      font-size: 20px;
+      font-weight: 600;
+      color: var(--tiza);
+      margin-bottom: 4px;
+    }
+    .sb-share-preview-nivel {
+      font-family: var(--font-body);
+      font-size: 11px;
+      letter-spacing: 0.14em;
+      text-transform: uppercase;
+      color: var(--rosa);
+      margin-bottom: 16px;
+    }
+    .sb-share-stats {
+      display: flex;
+      justify-content: center;
+      gap: 24px;
+    }
+    .sb-share-stat strong {
+      display: block;
+      font-family: var(--font-display);
+      font-size: 24px;
+      color: var(--tiza);
+    }
+    .sb-share-stat span {
+      font-family: var(--font-body);
+      font-size: 10px;
+      color: var(--vison);
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+    }
+
+    @media (max-width: 600px) {
+      .sb-productos-grid { grid-template-columns: repeat(2, 1fr); }
+      .sb-form-grid { grid-template-columns: 1fr; }
+      .sb-modal { padding: 24px 16px 32px; }
+    }
   </style>
 </head>
 <body>
@@ -604,6 +1000,9 @@
       const beneficios = await sbGet('beneficios', 'activo=eq.true&select=nombre,descripcion,tipo,puntos_requeridos&order=puntos_requeridos.asc');
       renderPremios(beneficios || [], puntos);
 
+      // 7. Skinbook
+      await cargarSkinbook(clienta.id, nombre, puntos);
+
       return clienta;
     }
 
@@ -750,6 +1149,320 @@
 
     dniInput.addEventListener('keydown', e => {
       if (e.key === 'Enter') loginBtn.click();
+    });
+
+
+    // ══════════════════════════════════════
+    // SKINBOOK
+    // ══════════════════════════════════════
+
+    let sbClientaId = null;
+    let sbClientaNombre = null;
+    let sbClientaPuntos = 0;
+    let sbPuntajeSeleccionado = 0;
+    let sbNivelesData = [];
+
+    const PREGUNTAS_POR_CATEGORIA = {
+      base:      ['¿Cómo fue la cobertura?', '¿Cuánto te duró en la piel?', '¿Se adaptó a tu tono?'],
+      corrector: ['¿Cubrió bien las ojeras o manchas?', '¿Se mantuvo todo el día?'],
+      labial:    ['¿Cómo fue la hidratación?', '¿Te duró el color?'],
+      mascara:   ['¿Alargó y definió bien?', '¿Se corrió durante el día?'],
+      sombra:    ['¿Cómo fue la pigmentación?', '¿Se difuminó bien?'],
+      skincare:  ['¿Notaste resultados?', '¿Cómo quedó tu piel después de usarlo?'],
+      protector: ['¿Dejó sensación grasa?', '¿Se integró bien con el maquillaje?'],
+      default:   ['¿Qué te gustó?', '¿Qué mejorarías?']
+    };
+
+    function getPreguntasParaProducto(categoria) {
+      return PREGUNTAS_POR_CATEGORIA[categoria] || PREGUNTAS_POR_CATEGORIA.default;
+    }
+
+    function getNivelSkinbook(totalProductos, totalReseñas, niveles) {
+      if (!niveles || niveles.length === 0) return null;
+      const sorted = [...niveles].sort((a, b) => b.productos_minimos - a.productos_minimos);
+      return sorted.find(n =>
+        totalProductos >= n.productos_minimos && totalReseñas >= n.reseñas_minimas
+      ) || niveles.find(n => n.nombre === 'Exploradora') || niveles[0];
+    }
+
+    function getNivelSiguiente(nivelActual, niveles) {
+      const sorted = [...niveles].sort((a, b) => a.productos_minimos - b.productos_minimos);
+      const idx = sorted.findIndex(n => n.id === nivelActual.id);
+      return sorted[idx + 1] || null;
+    }
+
+    async function cargarSkinbook(clientaId, nombreClienta, puntosClienta) {
+      sbClientaId = clientaId;
+      sbClientaNombre = nombreClienta;
+      sbClientaPuntos = puntosClienta;
+
+      // Actualizar share preview
+      document.getElementById('sbShareNombre').textContent = nombreClienta;
+      document.getElementById('sbSharePuntos').textContent = puntosClienta.toLocaleString('es-AR');
+
+      // Cargar niveles
+      sbNivelesData = await sbGet('skinbook_niveles', 'order=productos_minimos.asc');
+
+      // Cargar productos
+      const productos = await sbGet('skinbook_productos',
+        `clienta_id=eq.${clientaId}&order=creado_en.desc`
+      );
+      const totalProductos = productos?.length || 0;
+
+      // Cargar reseñas
+      const reseñas = await sbGet('skinbook',
+        `clienta_id=eq.${clientaId}&select=id,producto_nombre,marca,puntaje,texto,creado_en&order=creado_en.desc`
+      );
+      const totalReseñas = reseñas?.length || 0;
+
+      // Actualizar nivel
+      const nivelActual = getNivelSkinbook(totalProductos, totalReseñas, sbNivelesData);
+      if (nivelActual) {
+        document.getElementById('sbNivelEmoji').textContent = nivelActual.emoji || '✨';
+        document.getElementById('sbNivelNombre').textContent = nivelActual.nombre;
+        document.getElementById('sbNivelDesc').textContent = nivelActual.descripcion || '';
+        document.getElementById('sbShareNivel').textContent = nivelActual.nombre + ' · Skinbook';
+
+        const siguiente = getNivelSiguiente(nivelActual, sbNivelesData);
+        if (siguiente) {
+          const faltanProds = Math.max(0, siguiente.productos_minimos - totalProductos);
+          const faltanRes = Math.max(0, siguiente.reseñas_minimas - totalReseñas);
+          let texto = 'Próximo: ' + siguiente.nombre;
+          if (faltanProds > 0) texto += ` · +${faltanProds} prod.`;
+          if (faltanRes > 0) texto += ` · +${faltanRes} reseñas`;
+          document.getElementById('sbNextNivel').textContent = texto;
+        } else {
+          document.getElementById('sbNextNivel').textContent = '✦ Nivel máximo';
+        }
+      }
+
+      // Actualizar stats
+      document.getElementById('sbTotalProductos').textContent = totalProductos;
+      document.getElementById('sbTotalReseñas').textContent = totalReseñas;
+      document.getElementById('sbShareProds').textContent = totalProductos;
+      document.getElementById('sbShareReseñas').textContent = totalReseñas;
+
+      // Renderizar
+      renderSbProductos(productos || []);
+      renderSbReseñas(reseñas || []);
+    }
+
+    function renderSbProductos(productos) {
+      const grid = document.getElementById('sbProductosGrid');
+      if (productos.length === 0) {
+        grid.innerHTML = '<div class="empty-state" style="grid-column:1/-1;">Todavía no cargaste productos. ¡Agregá el primero!</div>';
+        return;
+      }
+      const stars = n => n ? '★'.repeat(n) + '☆'.repeat(5-n) : '';
+      const estadoLabel = { usando: 'Usando', usado: 'Usado', quiero_probar: 'Quiero probar' };
+      grid.innerHTML = productos.map(p => `
+        <div class="sb-producto-card">
+          ${p.es_de_jazmin ? '<span class="sb-prod-jazmin">Jazmín</span>' : ''}
+          <div class="sb-prod-categoria">${p.categoria || 'Producto'}</div>
+          <div class="sb-prod-nombre">${p.producto}</div>
+          <div class="sb-prod-marca">${p.marca}</div>
+          ${p.puntaje ? `<div class="sb-prod-stars">${stars(p.puntaje)}</div>` : ''}
+          <span class="sb-prod-estado estado-${p.estado}">${estadoLabel[p.estado] || p.estado}</span>
+        </div>
+      `).join('');
+    }
+
+    function renderSbReseñas(reseñas) {
+      const container = document.getElementById('sbReseñasContainer');
+      if (reseñas.length === 0) {
+        container.innerHTML = '<div class="empty-state">Todavía no dejaste reseñas. Las reseñas suman puntos al Club.</div>';
+        return;
+      }
+      const stars = n => n ? '★'.repeat(n) + '☆'.repeat(5-n) : '';
+      container.innerHTML = reseñas.map(r => `
+        <div class="sb-reseña-card">
+          <div class="sb-reseña-prod">${r.producto_nombre || 'Producto'}</div>
+          <div class="sb-reseña-marca">${r.marca || ''}</div>
+          ${r.puntaje ? `<div class="sb-prod-stars">${stars(r.puntaje)}</div>` : ''}
+          ${r.texto ? `<p style="font-size:13px;font-family:var(--font-body);font-weight:300;color:var(--grafito);line-height:1.6;margin-top:8px;">${r.texto}</p>` : ''}
+          <span class="sb-pts-ganados">+50 pts ganados</span>
+        </div>
+      `).join('');
+    }
+
+    // ── Tabs ──
+    document.querySelectorAll('.sb-tab').forEach(tab => {
+      tab.addEventListener('click', () => {
+        document.querySelectorAll('.sb-tab').forEach(t => t.classList.remove('active'));
+        document.querySelectorAll('.sb-tab-content').forEach(c => c.classList.remove('active'));
+        tab.classList.add('active');
+        document.getElementById(tab.dataset.tab).classList.add('active');
+      });
+    });
+
+    // ── Modal ──
+    document.getElementById('sbAddBtn')?.addEventListener('click', () => {
+      document.getElementById('sbModal').classList.add('open');
+    });
+    document.getElementById('sbModalClose')?.addEventListener('click', () => {
+      document.getElementById('sbModal').classList.remove('open');
+    });
+    document.getElementById('sbModal')?.addEventListener('click', e => {
+      if (e.target === document.getElementById('sbModal'))
+        document.getElementById('sbModal').classList.remove('open');
+    });
+
+    // ── Estrellas ──
+    document.querySelectorAll('.sb-star-btn').forEach(btn => {
+      btn.addEventListener('click', () => {
+        sbPuntajeSeleccionado = parseInt(btn.dataset.star);
+        document.querySelectorAll('.sb-star-btn').forEach((b, i) => {
+          b.classList.toggle('active', i < sbPuntajeSeleccionado);
+        });
+      });
+      btn.addEventListener('mouseenter', () => {
+        const h = parseInt(btn.dataset.star);
+        document.querySelectorAll('.sb-star-btn').forEach((b, i) => {
+          b.style.color = i < h ? 'var(--amarillo)' : '';
+        });
+      });
+      btn.addEventListener('mouseleave', () => {
+        document.querySelectorAll('.sb-star-btn').forEach((b, i) => {
+          b.style.color = '';
+          b.classList.toggle('active', i < sbPuntajeSeleccionado);
+        });
+      });
+    });
+
+    // ── Guardar producto ──
+    document.getElementById('sbProductoForm')?.addEventListener('submit', async e => {
+      e.preventDefault();
+      if (!sbClientaId) return;
+
+      const submitBtn = document.getElementById('sbProductoSubmit');
+      submitBtn.textContent = 'Guardando...';
+      submitBtn.disabled = true;
+
+      const marca    = document.getElementById('sbMarca').value.trim();
+      const producto = document.getElementById('sbProductoNombre').value.trim();
+      const categoria= document.getElementById('sbCategoria').value;
+      const tono     = document.getElementById('sbTono').value.trim() || null;
+      const estado   = document.getElementById('sbEstado').value;
+      const comentario = document.getElementById('sbComentario').value.trim() || null;
+      const vcRaw    = document.getElementById('sbVolveriaComprar').value;
+      const volveria = vcRaw === 'true' ? true : vcRaw === 'false' ? false : null;
+
+      try {
+        // Guardar producto
+        const res = await fetch(`${SB_URL}/rest/v1/skinbook_productos`, {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+            'apikey': SB_KEY,
+            'Authorization': `Bearer ${SB_KEY}`,
+            'Prefer': 'return=representation'
+          },
+          body: JSON.stringify({
+            clienta_id: sbClientaId,
+            marca, producto, categoria, tono, estado,
+            puntaje: sbPuntajeSeleccionado || null,
+            comentario,
+            volveria_comprar: volveria,
+            es_de_jazmin: false
+          })
+        });
+
+        if (!res.ok) throw new Error('Error al guardar');
+
+        const productoGuardado = await res.json();
+        const productoId = productoGuardado[0]?.id;
+
+        // Si tiene puntaje y comentario → crear reseña en skinbook y sumar puntos
+        if (sbPuntajeSeleccionado > 0 && comentario && productoId) {
+          await fetch(`${SB_URL}/rest/v1/skinbook`, {
+            method: 'POST',
+            headers: {
+              'Content-Type': 'application/json',
+              'apikey': SB_KEY,
+              'Authorization': `Bearer ${SB_KEY}`
+            },
+            body: JSON.stringify({
+              clienta_id: sbClientaId,
+              producto_nombre: producto,
+              marca,
+              puntaje: sbPuntajeSeleccionado,
+              texto: comentario,
+              puntos_otorgados: 50
+            })
+          });
+
+          // Sumar 50 puntos
+          await fetch(`${SB_URL}/rest/v1/movimientos_puntos`, {
+            method: 'POST',
+            headers: {
+              'Content-Type': 'application/json',
+              'apikey': SB_KEY,
+              'Authorization': `Bearer ${SB_KEY}`
+            },
+            body: JSON.stringify({
+              clienta_id: sbClientaId,
+              tipo: 'ganado',
+              origen: 'reseña',
+              puntos: 50,
+              nota: `Reseña de ${marca} ${producto}`
+            })
+          });
+
+          // Actualizar puntos en clientas
+          await fetch(`${SB_URL}/rest/v1/clientas?id=eq.${sbClientaId}`, {
+            method: 'PATCH',
+            headers: {
+              'Content-Type': 'application/json',
+              'apikey': SB_KEY,
+              'Authorization': `Bearer ${SB_KEY}`
+            },
+            body: JSON.stringify({ puntos_actuales: sbClientaPuntos + 50 })
+          });
+          sbClientaPuntos += 50;
+        }
+
+        // Cerrar modal y recargar
+        document.getElementById('sbModal').classList.remove('open');
+        document.getElementById('sbProductoForm').reset();
+        sbPuntajeSeleccionado = 0;
+        document.querySelectorAll('.sb-star-btn').forEach(b => b.classList.remove('active'));
+
+        // Recargar skinbook
+        await cargarSkinbook(sbClientaId, sbClientaNombre, sbClientaPuntos);
+
+        submitBtn.textContent = '¡Guardado!';
+        submitBtn.style.background = '#026359';
+        setTimeout(() => {
+          submitBtn.textContent = 'Guardar producto';
+          submitBtn.disabled = false;
+          submitBtn.style.background = '';
+        }, 2000);
+
+      } catch(err) {
+        console.error(err);
+        submitBtn.textContent = 'Error — intentá de nuevo';
+        submitBtn.disabled = false;
+        setTimeout(() => { submitBtn.textContent = 'Guardar producto'; }, 3000);
+      }
+    });
+
+    // ── Compartir perfil ──
+    document.getElementById('sbShareBtn')?.addEventListener('click', async () => {
+      const nivel = document.getElementById('sbNivelNombre').textContent;
+      const prods = document.getElementById('sbTotalProductos').textContent;
+      const reseñas = document.getElementById('sbTotalReseñas').textContent;
+      const texto = `Soy ${nivel} en Skinbook de Club Jazmín 💄\n${prods} productos · ${reseñas} reseñas\nclub.jazminderosas.com`;
+      if (navigator.share) {
+        try {
+          await navigator.share({ text: texto, url: 'https://club.jazminderosas.com' });
+        } catch(e) { console.log('Share cancelado'); }
+      } else {
+        await navigator.clipboard.writeText(texto);
+        const btn = document.getElementById('sbShareBtn');
+        const orig = btn.textContent;
+        btn.textContent = '¡Texto copiado!';
+        setTimeout(() => { btn.textContent = orig; }, 2000);
+      }
     });
 
     document.getElementById('logoutBtn').addEventListener('click', () => {
