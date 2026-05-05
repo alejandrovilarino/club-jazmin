@@ -1268,8 +1268,8 @@
 
 
     // ══════════════════════════════════════
-    // MOTOR DE RECOMENDACIONES
-    // 3 capas: tipo de piel, perfil similar, cross-selling
+    // MOTOR DE RECOMENDACIONES v2
+    // Collaborative Filtering real + Cross-selling + Tipo de piel
     // ══════════════════════════════════════
 
     async function cargarRecomendaciones(clienta, compras, sbProductos) {
@@ -1277,161 +1277,212 @@
       const recomendaciones = [];
 
       try {
-        // ── Datos de la clienta ──
         const tipoPiel = clienta.tipo_piel || null;
         const estiloMaquillaje = clienta.estilo_maquillaje || null;
+        const nombreClienta = (clienta.nombre || '').toUpperCase();
 
-        // Categorías que ya tiene la clienta (de compras + skinbook)
+        // ── SKUs que ya tiene la clienta (de compras del Club) ──
+        const skusClientaSet = new Set();
+        (compras || []).forEach(c => {
+          (c.productos || []).forEach(p => {
+            if (p.sku && p.sku !== 'false' && p.sku !== '0') skusClientaSet.add(p.sku);
+          });
+        });
+        (sbProductos || []).forEach(p => { if (p.sku) skusClientaSet.add(p.sku); });
+
+        // ── CAPA 1: Collaborative Filtering — co-purchase matrix ──
+        // Buscar el perfil histórico de esta clienta por nombre
+        let skusHistoricos = new Set(skusClientaSet);
+        try {
+          const perfilHist = await sbGet('cf_cliente_skus',
+            `nombre_cliente=eq.${encodeURIComponent(nombreClienta)}&select=skus,total_ordenes`
+          );
+          if (perfilHist?.length > 0) {
+            const skusArr = perfilHist[0].skus || [];
+            skusArr.forEach(s => skusHistoricos.add(s));
+            console.log(`Perfil histórico encontrado: ${skusArr.length} SKUs, ${perfilHist[0].total_ordenes} órdenes`);
+          }
+        } catch(e) { console.log('Sin perfil histórico:', e); }
+
+        // Buscar co-purchases para los SKUs que tiene
+        if (skusHistoricos.size > 0) {
+          const skusArr = [...skusHistoricos].slice(0, 20); // max 20 SKUs para la query
+          const skusStr = skusArr.map(s => `'${s}'`).join(',');
+
+          // Buscar pares donde sku1 o sku2 esté en sus SKUs, ordenado por lift
+          const pares1 = await sbGet('cf_copurchase',
+            `sku1=in.(${skusStr})&order=lift.desc,count.desc&limit=30&select=sku2,nombre2,count,lift,confidence_ab`
+          );
+          const pares2 = await sbGet('cf_copurchase',
+            `sku2=in.(${skusStr})&order=lift.desc,count.desc&limit=30&select=sku1,nombre1,count,lift,confidence_ba`
+          );
+
+          // Consolidar recomendaciones CF
+          const cfMap = new Map();
+
+          (pares1 || []).forEach(p => {
+            if (!skusHistoricos.has(p.sku2) && p.sku2) {
+              const key = p.sku2;
+              const existing = cfMap.get(key);
+              if (!existing || p.lift > existing.lift) {
+                cfMap.set(key, {
+                  sku: p.sku2,
+                  nombre: p.nombre2,
+                  count: p.count,
+                  lift: p.lift,
+                  confidence: p.confidence_ab
+                });
+              }
+            }
+          });
+
+          (pares2 || []).forEach(p => {
+            if (!skusHistoricos.has(p.sku1) && p.sku1) {
+              const key = p.sku1;
+              const existing = cfMap.get(key);
+              if (!existing || p.lift > existing.lift) {
+                cfMap.set(key, {
+                  sku: p.sku1,
+                  nombre: p.nombre1,
+                  count: p.count,
+                  lift: p.lift,
+                  confidence: p.confidence_ba
+                });
+              }
+            }
+          });
+
+          // Top 3 por lift
+          const topCF = [...cfMap.values()]
+            .sort((a, b) => (b.lift * b.count) - (a.lift * a.count))
+            .slice(0, 3);
+
+          // Cruzar con catálogo para tener categoría y marca
+          if (topCF.length > 0) {
+            const skusCF = topCF.map(r => r.sku);
+            const catalogoCF = await sbGet('catalogo_productos',
+              `sku=in.(${skusCF.join(',')})&select=nombre,marca,categoria,sku`
+            );
+            const catMap = {};
+            (catalogoCF || []).forEach(p => { catMap[p.sku] = p; });
+
+            topCF.forEach(r => {
+              const cat = catMap[r.sku];
+              const afinidad = Math.min(99, Math.round(r.confidence * 100 * (r.lift > 1 ? Math.min(r.lift, 3) : 1)));
+              recomendaciones.push({
+                nombre: cat?.nombre || r.nombre || 'Producto recomendado',
+                marca: cat?.marca || 'Jazmín de Rosas',
+                categoria: cat?.categoria || '',
+                motivo: 'cf',
+                motivoLabel: 'Clientas como vos eligieron',
+                razon: `${r.count} clientas que compraron productos similares también eligieron este`,
+                popularidad: afinidad,
+                lift: r.lift
+              });
+            });
+          }
+        }
+
+        // ── CAPA 2: Cross-selling por categoría (tabla cf_copurchase como respaldo) ──
+        // Detectar categorías compradas de los nombres de productos
         const categoriasCompradas = new Set();
         (compras || []).forEach(c => {
           (c.productos || []).forEach(p => {
-            if (p.nombre) {
-              // Detectar categoría básica por nombre del producto
-              const n = p.nombre.toLowerCase();
-              if (n.includes('base') || n.includes('fondo')) categoriasCompradas.add('base');
-              if (n.includes('corrector')) categoriasCompradas.add('corrector');
-              if (n.includes('labial') || n.includes('lip')) categoriasCompradas.add('labial');
-              if (n.includes('máscara') || n.includes('mascara') || n.includes('rimel')) categoriasCompradas.add('mascara');
-              if (n.includes('sombra') || n.includes('eyeshadow')) categoriasCompradas.add('sombra');
-              if (n.includes('rubor') || n.includes('blush')) categoriasCompradas.add('rubor');
-              if (n.includes('polvo') || n.includes('powder')) categoriasCompradas.add('polvo');
-              if (n.includes('primer')) categoriasCompradas.add('primer');
-              if (n.includes('delineador') || n.includes('liner')) categoriasCompradas.add('delineador');
-              if (n.includes('iluminador') || n.includes('highlighter')) categoriasCompradas.add('iluminador');
-              if (n.includes('contorno') || n.includes('bronzer')) categoriasCompradas.add('contorno');
-              if (n.includes('fijador') || n.includes('setting')) categoriasCompradas.add('fijador');
-              if (n.includes('skincare') || n.includes('crema') || n.includes('serum') || n.includes('sérum')) categoriasCompradas.add('skincare');
-              if (n.includes('protector') || n.includes('fps') || n.includes('spf')) categoriasCompradas.add('protector');
-            }
+            const n = (p.nombre || '').toLowerCase();
+            if (n.includes('base') || n.includes('skin tint') || n.includes('foundation')) categoriasCompradas.add('base');
+            if (n.includes('corrector') || n.includes('concealer')) categoriasCompradas.add('corrector');
+            if (n.includes('labial') || n.includes('lipstick') || n.includes('lip ')) categoriasCompradas.add('labial');
+            if (n.includes('máscara') || n.includes('mascara') || n.includes('rimmel')) categoriasCompradas.add('mascara');
+            if (n.includes('sombra') || n.includes('eyeshadow') || n.includes('paleta')) categoriasCompradas.add('sombra');
+            if (n.includes('rubor') || n.includes('blush')) categoriasCompradas.add('rubor');
+            if (n.includes('polvo') || n.includes('powder')) categoriasCompradas.add('polvo');
+            if (n.includes('bronzer') || n.includes('contorno')) categoriasCompradas.add('contorno');
+            if (n.includes('iluminador') || n.includes('highlighter')) categoriasCompradas.add('iluminador');
+            if (n.includes('delineador') || n.includes('liner') || n.includes('eyeliner')) categoriasCompradas.add('delineador');
+            if (n.includes('primer')) categoriasCompradas.add('primer');
+            if (n.includes('fijador') || n.includes('setting')) categoriasCompradas.add('fijador');
+            if (n.includes('skincare') || n.includes('crema') || n.includes('sérum') || n.includes('serum')) categoriasCompradas.add('skincare');
+            if (n.includes('protector') || n.includes('fps') || n.includes('spf')) categoriasCompradas.add('protector');
           });
         });
+        (sbProductos || []).forEach(p => { if (p.categoria) categoriasCompradas.add(p.categoria); });
 
-        // Agregar categorías del Skinbook
-        (sbProductos || []).forEach(p => {
-          if (p.categoria) categoriasCompradas.add(p.categoria);
-        });
-
-        // ── CAPA 1: Cross-selling ──
-        if (categoriasCompradas.size > 0) {
-          const categoriasArr = [...categoriasCompradas];
+        if (categoriasCompradas.size > 0 && recomendaciones.length < 4) {
+          const cats = [...categoriasCompradas];
           const crossReglas = await sbGet('cross_selling_reglas',
-            `categoria_origen=in.(${categoriasArr.join(',')})&order=prioridad.asc&limit=20`
+            `categoria_origen=in.(${cats.join(',')})&order=prioridad.asc&limit=10`
+          );
+          const categoriasCross = new Set(
+            (crossReglas || [])
+              .map(r => r.categoria_destino)
+              .filter(c => !categoriasCompradas.has(c))
           );
 
-          const categoriasCross = new Set();
-          (crossReglas || []).forEach(r => {
-            if (!categoriasCompradas.has(r.categoria_destino)) {
-              categoriasCross.add(r.categoria_destino);
-            }
-          });
-
-          // Buscar productos del catálogo para esas categorías
           if (categoriasCross.size > 0) {
             const prodsCross = await sbGet('catalogo_productos',
-              `categoria=in.(${[...categoriasCross].join(',')})&activo=eq.true&limit=10`
+              `categoria=in.(${[...categoriasCross].slice(0,5).join(',')})&activo=eq.true&limit=6`
             );
-            (prodsCross || []).slice(0, 3).forEach(p => {
-              const origenCategoria = crossReglas.find(r => r.categoria_destino === p.categoria)?.categoria_origen;
-              recomendaciones.push({
-                ...p,
-                motivo: 'cross',
-                motivoLabel: 'Complementa tu rutina',
-                razon: origenCategoria
-                  ? `Las clientas que tienen ${origenCategoria} también eligen este producto`
-                  : 'Ideal para complementar tu rutina actual',
-                popularidad: 75
-              });
+            (prodsCross || []).slice(0, 6 - recomendaciones.length).forEach(p => {
+              if (!recomendaciones.find(r => r.nombre === p.nombre)) {
+                const origen = crossReglas.find(r => r.categoria_destino === p.categoria)?.categoria_origen;
+                recomendaciones.push({
+                  nombre: p.nombre,
+                  marca: p.marca,
+                  categoria: p.categoria,
+                  motivo: 'cross',
+                  motivoLabel: 'Complementa tu rutina',
+                  razon: origen ? `Ideal para combinar con tu ${origen}` : 'Completa tu rutina de maquillaje',
+                  popularidad: 72
+                });
+              }
             });
           }
         }
 
-        // ── CAPA 2: Tipo de piel ──
-        if (tipoPiel) {
+        // ── CAPA 3: Tipo de piel ──
+        if (tipoPiel && recomendaciones.length < 6) {
           const prodsPiel = await sbGet('catalogo_productos',
-            `activo=eq.true&limit=20`
+            `activo=eq.true&limit=30`
           );
           const filtradosPiel = (prodsPiel || []).filter(p =>
-            p.tipo_piel && Array.isArray(p.tipo_piel) && p.tipo_piel.includes(tipoPiel)
+            p.tipo_piel && Array.isArray(p.tipo_piel) &&
+            (p.tipo_piel.includes(tipoPiel) || p.tipo_piel.includes('todo_tipo'))
           );
-          filtradosPiel.slice(0, 2).forEach(p => {
-            if (!recomendaciones.find(r => r.id === p.id)) {
+          filtradosPiel
+            .filter(p => !recomendaciones.find(r => r.nombre === p.nombre))
+            .slice(0, 6 - recomendaciones.length)
+            .forEach(p => {
               recomendaciones.push({
-                ...p,
+                nombre: p.nombre,
+                marca: p.marca,
+                categoria: p.categoria,
                 motivo: 'piel',
                 motivoLabel: 'Para tu tipo de piel',
                 razon: `Recomendado para piel ${tipoPiel}`,
-                popularidad: 85
-              });
-            }
-          });
-        }
-
-        // ── CAPA 3: Perfil similar (otras clientas con mismo tipo piel + estilo) ──
-        if (tipoPiel || estiloMaquillaje) {
-          let filtroSimilar = 'select=id&puntos_actuales=gt.0';
-          if (tipoPiel) filtroSimilar += `&tipo_piel=eq.${tipoPiel}`;
-          if (estiloMaquillaje) filtroSimilar += `&estilo_maquillaje=eq.${estiloMaquillaje}`;
-          filtroSimilar += `&id=neq.${clienta.id}&limit=20`;
-
-          const clientasSimilares = await sbGet('clientas', filtroSimilar);
-
-          if (clientasSimilares?.length > 0) {
-            const idsStr = clientasSimilares.map(c => c.id).join(',');
-            const comprasSimilares = await sbGet('compras',
-              `clienta_id=in.(${idsStr})&select=productos&limit=50`
-            );
-
-            // Contar frecuencia de productos
-            const frecuencia = {};
-            (comprasSimilares || []).forEach(c => {
-              (c.productos || []).forEach(p => {
-                if (p.nombre) {
-                  const key = p.nombre.toLowerCase();
-                  frecuencia[key] = (frecuencia[key] || { nombre: p.nombre, count: 0 });
-                  frecuencia[key].count++;
-                }
+                popularidad: 80
               });
             });
-
-            // Top 3 productos más comprados por clientas similares que ella no tiene
-            const topSimilares = Object.values(frecuencia)
-              .filter(p => {
-                const n = p.nombre.toLowerCase();
-                // Verificar que no lo tenga ya
-                return ![...categoriasCompradas].some(cat => n.includes(cat));
-              })
-              .sort((a, b) => b.count - a.count)
-              .slice(0, 2);
-
-            topSimilares.forEach(p => {
-              recomendaciones.push({
-                nombre: p.nombre,
-                marca: 'Jazmín de Rosas',
-                categoria: 'popular',
-                motivo: 'similar',
-                motivoLabel: 'Clientas como vos',
-                razon: `${p.count} clienta${p.count > 1 ? 's' : ''} con tu perfil lo eligió`,
-                popularidad: Math.min(95, 50 + p.count * 10)
-              });
-            });
-          }
         }
 
         // ── Renderizar ──
         if (recomendaciones.length === 0) {
           container.innerHTML = `<div class="empty-state">
-            Seguí comprando y completando tu Skinbook para recibir recomendaciones personalizadas.
+            Seguí comprando para recibir recomendaciones personalizadas basadas en tu historial.
           </div>`;
           return;
         }
 
-        const motivoClass = { cross: 'reco-motivo-cross', piel: 'reco-motivo-piel', similar: 'reco-motivo-similar' };
+        const motivoClass = {
+          cf: 'reco-motivo-similar',
+          cross: 'reco-motivo-cross',
+          piel: 'reco-motivo-piel'
+        };
 
         container.innerHTML = `<div class="reco-grid">
           ${recomendaciones.slice(0, 6).map(r => `
             <div class="reco-card">
               <p class="reco-motivo ${motivoClass[r.motivo] || ''}">${r.motivoLabel}</p>
-              <p class="reco-categoria">${r.categoria}</p>
+              ${r.categoria ? `<p class="reco-categoria">${r.categoria}</p>` : ''}
               <p class="reco-nombre">${r.nombre}</p>
               <p class="reco-marca">${r.marca || ''}</p>
               <p class="reco-razon">${r.razon}</p>
@@ -1452,7 +1503,7 @@
       }
     }
 
-    // ── LOGIN FLOW ──
+        // ── LOGIN FLOW ──
     const loginScreen = document.getElementById('loginScreen');
     const perfilScreen = document.getElementById('perfilScreen');
     const dniInput = document.getElementById('dniInput');
