@@ -9,15 +9,89 @@
   <meta property="og:description" content="El programa de beneficios de Jazmín de Rosas."/>
   <meta property="og:type" content="website"/>
   <link rel="stylesheet" href="css/style.css"/>
+
+  <!-- Google reCAPTCHA v3 — reemplazá 6Ld3MdosAAAAAI0Lhfcud7zl3AqkKDwkhfOkUbiT con tu clave -->
+  <script src="https://www.google.com/recaptcha/api.js?render=6Ld3MdosAAAAAI0Lhfcud7zl3AqkKDwkhfOkUbiT" async defer></script>
+
   <style>
     .animate-on-scroll {
       opacity: 0;
       transform: translateY(24px);
       transition: opacity 0.7s ease, transform 0.7s ease;
     }
-    .animate-on-scroll.visible {
-      opacity: 1;
-      transform: translateY(0);
+    .animate-on-scroll.visible { opacity: 1; transform: translateY(0); }
+
+    /* Validación visual */
+    .form-input.error,
+    .form-select.error { border-color: var(--rojo) !important; }
+    .form-input.ok,
+    .form-select.ok { border-color: #026359 !important; }
+
+    .field-error {
+      font-family: var(--font-body, system-ui);
+      font-size: 10px;
+      color: var(--rojo, #c52c2e);
+      margin-top: 4px;
+      min-height: 14px;
+      display: block;
+      letter-spacing: 0.03em;
+    }
+
+    /* Honeypot — completamente oculto */
+    .hp-field {
+      position: absolute;
+      left: -9999px;
+      top: -9999px;
+      opacity: 0;
+      height: 0;
+      width: 0;
+      overflow: hidden;
+      tab-index: -1;
+    }
+
+    /* Mensaje de éxito */
+    .registro-success {
+      display: none;
+      text-align: center;
+      padding: 40px 20px;
+    }
+    .registro-success.visible { display: block; }
+    .success-icon {
+      width: 56px;
+      height: 56px;
+      border-radius: 50%;
+      background: #026359;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      margin: 0 auto 16px;
+      font-size: 24px;
+    }
+    .success-title {
+      font-family: var(--font-display, Georgia);
+      font-size: 28px;
+      font-weight: 600;
+      color: var(--grafito, #1c1c1c);
+      margin-bottom: 8px;
+    }
+    .success-sub {
+      font-family: var(--font-body, system-ui);
+      font-size: 14px;
+      font-weight: 300;
+      color: var(--vison, #6a645f);
+      line-height: 1.6;
+      margin-bottom: 20px;
+    }
+    .success-pts {
+      display: inline-block;
+      background: linear-gradient(135deg, #f7e8ef, #eedff0);
+      border: 1px solid #e8c8d8;
+      border-radius: 8px;
+      padding: 12px 24px;
+      font-family: var(--font-display, Georgia);
+      font-size: 22px;
+      font-weight: 600;
+      color: var(--malva, #a95aaf);
     }
   </style>
 </head>
@@ -82,7 +156,7 @@
   <!-- BENEFICIOS -->
   <section>
     <p class="section-label animate-on-scroll">Por qué unirse</p>
-    <h2 class="section-title animate-on-scroll">Beneficios por cada vez que<br>elegís Jazmín de Rosas</h2>
+    <h2 class="section-title animate-on-scroll">Beneficios por cada vez que elegís Jazmín de Rosas</h2>
     <div class="benefits-grid container">
       <div class="benefit-card animate-on-scroll">
         <div class="benefit-icon" style="background:#fce8ef;">
@@ -162,27 +236,41 @@
     <h2 class="section-title animate-on-scroll">Registrate ahora y sumá los puntos<br>de tus compras anteriores</h2>
 
     <div class="form-wrap animate-on-scroll">
+
+      <!-- FORMULARIO -->
       <form id="registroForm" novalidate>
+
+        <!-- HONEYPOT — campo trampa para bots, nunca visible para humanos -->
+        <div class="hp-field" aria-hidden="true">
+          <label for="hp_website">Sitio web</label>
+          <input type="text" id="hp_website" name="hp_website" tabindex="-1" autocomplete="off"/>
+        </div>
+
         <div class="form-grid">
           <div class="form-group">
             <label class="form-label" for="nombre">Nombre</label>
-            <input class="form-input" type="text" id="nombre" name="nombre" placeholder="Tu nombre" required/>
+            <input class="form-input" type="text" id="nombre" name="nombre" placeholder="Tu nombre" required autocomplete="given-name"/>
+            <span class="field-error" id="err-nombre"></span>
           </div>
           <div class="form-group">
             <label class="form-label" for="dni">DNI</label>
-            <input class="form-input" type="text" id="dni" name="dni" placeholder="Sin puntos" required maxlength="8"/>
+            <input class="form-input" type="text" id="dni" name="dni" placeholder="Sin puntos" required maxlength="8" inputmode="numeric" autocomplete="off"/>
+            <span class="field-error" id="err-dni"></span>
           </div>
           <div class="form-group">
             <label class="form-label" for="telefono">Teléfono (WhatsApp)</label>
-            <input class="form-input" type="tel" id="telefono" name="telefono" placeholder="11 xxxx xxxx" required/>
+            <input class="form-input" type="tel" id="telefono" name="telefono" placeholder="11 xxxx xxxx" required autocomplete="tel"/>
+            <span class="field-error" id="err-telefono"></span>
           </div>
           <div class="form-group">
             <label class="form-label" for="nacimiento">Fecha de nacimiento</label>
             <input class="form-input" type="date" id="nacimiento" name="nacimiento" required/>
+            <span class="field-error" id="err-nacimiento"></span>
           </div>
           <div class="form-group full">
-            <label class="form-label" for="email">Email (opcional)</label>
-            <input class="form-input" type="email" id="email" name="email" placeholder="tu@email.com"/>
+            <label class="form-label" for="email">Email</label>
+            <input class="form-input" type="email" id="email" name="email" placeholder="tu@email.com" required autocomplete="email"/>
+            <span class="field-error" id="err-email"></span>
           </div>
           <div class="form-group full">
             <label class="form-label" for="piel">Tipo de piel</label>
@@ -195,6 +283,7 @@
                 <option value="sensible">Sensible</option>
               </select>
             </div>
+            <span class="field-error" id="err-piel"></span>
           </div>
           <div class="form-group full">
             <label class="form-label" for="estilo">Estilo de maquillaje</label>
@@ -207,22 +296,263 @@
                 <option value="artistico">Artístico / experimental</option>
               </select>
             </div>
+            <span class="field-error" id="err-estilo"></span>
           </div>
         </div>
-        <button type="submit" class="btn btn-dark">Unirme al Club</button>
+
+        <button type="submit" class="btn btn-dark" id="submitBtn">Unirme al Club</button>
         <div class="form-pts-badge">
           Recibís <strong>200 puntos</strong> de bienvenida al registrarte
         </div>
       </form>
+
+      <!-- MENSAJE DE ÉXITO -->
+      <div class="registro-success" id="registroSuccess">
+        <div class="success-icon">🌹</div>
+        <p class="success-title">¡Bienvenida al Club!</p>
+        <p class="success-sub">Tu registro fue exitoso.<br>Tus puntos de compras anteriores ya están siendo procesados.</p>
+        <div class="success-pts">+200 puntos de bienvenida</div>
+        <br><br>
+        <a href="pages/perfil.html" class="btn btn-primary" style="margin-top:12px;">Ver mi perfil</a>
+      </div>
+
     </div>
   </section>
 
   <!-- FOOTER -->
   <footer>
     <p class="footer-logo">CLUB <em>JAZMÍN</em> DE ROSAS</p>
-    <p class="footer-sub">club.jazminderosas.com.ar · Todos los derechos reservados</p>
+    <p class="footer-sub">club.jazminderosas.com · Todos los derechos reservados</p>
   </footer>
 
   <script src="js/main.js"></script>
+  <script>
+    // ══════════════════════════════════════
+    // VALIDACIÓN Y REGISTRO — Club Jazmín
+    // ══════════════════════════════════════
+
+    const 6Ld3MdosAAAAAI0Lhfcud7zl3AqkKDwkhfOkUbiT = '6Ld3MdosAAAAAI0Lhfcud7zl3AqkKDwkhfOkUbiT'; // reemplazá con tu clave real
+    const SB_URL = 'https://qgsdqzqvrbkprbmehzcf.supabase.co';
+    const SB_KEY = 'sb_publishable_0RGb096UtD0AQYRtukuNwg_zmLf3nwF';
+
+    // ── Helpers ──
+    function setError(id, msg) {
+      const el = document.getElementById('err-' + id);
+      const input = document.getElementById(id);
+      if (el) el.textContent = msg;
+      if (input) {
+        input.classList.toggle('error', !!msg);
+        input.classList.toggle('ok', !msg && input.value.trim() !== '');
+      }
+    }
+
+    function clearError(id) { setError(id, ''); }
+
+    async function sbGet(tabla, filtro) {
+      const res = await fetch(`${SB_URL}/rest/v1/${tabla}?${filtro}`, {
+        headers: { 'apikey': SB_KEY, 'Authorization': `Bearer ${SB_KEY}` }
+      });
+      return res.json();
+    }
+
+    // ── Validaciones en tiempo real ──
+    document.getElementById('dni')?.addEventListener('blur', async function() {
+      const val = this.value.trim().replace(/\./g, '');
+      if (!val) { setError('dni', 'El DNI es obligatorio.'); return; }
+      if (!/^\d{7,8}$/.test(val)) { setError('dni', 'Ingresá un DNI válido (7 u 8 dígitos).'); return; }
+      // Verificar duplicado
+      try {
+        const exist = await sbGet('clientas', `dni=eq.${val}&select=id`);
+        if (exist?.length > 0) {
+          setError('dni', 'Este DNI ya está registrado. ¿Querés ver tu perfil?');
+        } else {
+          clearError('dni');
+        }
+      } catch(e) { clearError('dni'); }
+    });
+
+    document.getElementById('email')?.addEventListener('blur', async function() {
+      const val = this.value.trim().toLowerCase();
+      if (!val) { setError('email', 'El email es obligatorio.'); return; }
+      if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(val)) {
+        setError('email', 'Ingresá un email válido (ej: nombre@dominio.com).');
+        return;
+      }
+      // Verificar duplicado
+      try {
+        const exist = await sbGet('clientas', `email=eq.${encodeURIComponent(val)}&select=id`);
+        if (exist?.length > 0) {
+          setError('email', 'Este email ya está registrado.');
+        } else {
+          clearError('email');
+        }
+      } catch(e) { clearError('email'); }
+    });
+
+    document.getElementById('nombre')?.addEventListener('blur', function() {
+      if (!this.value.trim()) setError('nombre', 'El nombre es obligatorio.');
+      else clearError('nombre');
+    });
+
+    document.getElementById('telefono')?.addEventListener('blur', function() {
+      const val = this.value.trim().replace(/\s/g, '');
+      if (!val) { setError('telefono', 'El teléfono es obligatorio.'); return; }
+      if (!/^\d{8,15}$/.test(val)) { setError('telefono', 'Ingresá un teléfono válido.'); return; }
+      clearError('telefono');
+    });
+
+    document.getElementById('nacimiento')?.addEventListener('blur', function() {
+      if (!this.value) { setError('nacimiento', 'La fecha de nacimiento es obligatoria.'); return; }
+      const fecha = new Date(this.value);
+      const hoy = new Date();
+      const edad = (hoy - fecha) / (365.25 * 24 * 3600 * 1000);
+      if (edad < 13) { setError('nacimiento', 'Debés tener al menos 13 años.'); return; }
+      if (edad > 110) { setError('nacimiento', 'Verificá la fecha ingresada.'); return; }
+      clearError('nacimiento');
+    });
+
+    // ── Submit principal ──
+    const registroForm = document.getElementById('registroForm');
+    if (registroForm) {
+      registroForm.addEventListener('submit', async function(e) {
+        e.preventDefault();
+
+        // ── Anti-spam: honeypot ──
+        const hp = document.getElementById('hp_website');
+        if (hp && hp.value.trim() !== '') {
+          console.log('Bot detectado via honeypot');
+          return;
+        }
+
+        const btn = document.getElementById('submitBtn');
+        btn.textContent = 'Verificando...';
+        btn.disabled = true;
+
+        // ── Leer valores ──
+        const nombre   = document.getElementById('nombre').value.trim();
+        const dniRaw   = document.getElementById('dni').value.trim().replace(/\./g, '');
+        const telefono = document.getElementById('telefono').value.trim();
+        const email    = document.getElementById('email').value.trim().toLowerCase();
+        const nacim    = document.getElementById('nacimiento').value;
+        const piel     = document.getElementById('piel').value;
+        const estilo   = document.getElementById('estilo').value;
+
+        // ── Validación completa ──
+        let hasError = false;
+
+        if (!nombre) { setError('nombre', 'El nombre es obligatorio.'); hasError = true; }
+        if (!dniRaw || !/^\d{7,8}$/.test(dniRaw)) { setError('dni', 'Ingresá un DNI válido.'); hasError = true; }
+        if (!email || !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) { setError('email', 'Ingresá un email válido.'); hasError = true; }
+        if (!telefono || !/^\d{8,15}$/.test(telefono.replace(/\s/g,''))) { setError('telefono', 'Ingresá un teléfono válido.'); hasError = true; }
+        if (!nacim) { setError('nacimiento', 'La fecha de nacimiento es obligatoria.'); hasError = true; }
+        if (!piel) { setError('piel', 'Seleccioná tu tipo de piel.'); hasError = true; }
+        if (!estilo) { setError('estilo', 'Seleccioná tu estilo.'); hasError = true; }
+
+        if (hasError) {
+          btn.textContent = 'Unirme al Club';
+          btn.disabled = false;
+          // Scroll al primer error
+          const firstError = registroForm.querySelector('.form-input.error, .form-select.error');
+          if (firstError) firstError.scrollIntoView({ behavior: 'smooth', block: 'center' });
+          return;
+        }
+
+        // ── reCAPTCHA v3 ──
+        let recaptchaToken = '';
+        try {
+          if (typeof grecaptcha !== 'undefined' && 6Ld3MdosAAAAAI0Lhfcud7zl3AqkKDwkhfOkUbiT !== '6Ld3MdosAAAAAI0Lhfcud7zl3AqkKDwkhfOkUbiT') {
+            recaptchaToken = await grecaptcha.execute(6Ld3MdosAAAAAI0Lhfcud7zl3AqkKDwkhfOkUbiT, { action: 'registro' });
+          }
+        } catch(e) { console.log('reCAPTCHA no disponible:', e); }
+
+        btn.textContent = 'Guardando...';
+
+        try {
+          // ── Verificar duplicado DNI ──
+          const dniExist = await sbGet('clientas', `dni=eq.${dniRaw}&select=id`);
+          if (dniExist?.length > 0) {
+            setError('dni', 'Este DNI ya está registrado. ¿Querés ver tu perfil?');
+            btn.textContent = 'Unirme al Club';
+            btn.disabled = false;
+            document.getElementById('dni').scrollIntoView({ behavior: 'smooth', block: 'center' });
+            return;
+          }
+
+          // ── Verificar duplicado email ──
+          const emailExist = await sbGet('clientas', `email=eq.${encodeURIComponent(email)}&select=id`);
+          if (emailExist?.length > 0) {
+            setError('email', 'Este email ya está registrado.');
+            btn.textContent = 'Unirme al Club';
+            btn.disabled = false;
+            document.getElementById('email').scrollIntoView({ behavior: 'smooth', block: 'center' });
+            return;
+          }
+
+          // ── Obtener nivel inicial ──
+          const niveles = await sbGet('niveles', 'nombre=eq.Inicial&select=id');
+          const nivel_id = niveles?.[0]?.id || null;
+
+          // ── Insertar clienta ──
+          const res = await fetch(`${SB_URL}/rest/v1/clientas`, {
+            method: 'POST',
+            headers: {
+              'Content-Type': 'application/json',
+              'apikey': SB_KEY,
+              'Authorization': `Bearer ${SB_KEY}`,
+              'Prefer': 'return=representation'
+            },
+            body: JSON.stringify({
+              dni: dniRaw,
+              nombre,
+              telefono,
+              email,
+              fecha_nacimiento: nacim,
+              tipo_piel: piel,
+              estilo_maquillaje: estilo,
+              nivel_id,
+              puntos_actuales: 200
+            })
+          });
+
+          const data = await res.json();
+          if (!res.ok) throw new Error(data.message || JSON.stringify(data));
+
+          const clienta_id = data[0]?.id;
+
+          // ── Movimiento de bienvenida ──
+          await fetch(`${SB_URL}/rest/v1/movimientos_puntos`, {
+            method: 'POST',
+            headers: {
+              'Content-Type': 'application/json',
+              'apikey': SB_KEY,
+              'Authorization': `Bearer ${SB_KEY}`
+            },
+            body: JSON.stringify({
+              clienta_id,
+              tipo: 'ganado',
+              origen: 'registro',
+              puntos: 200,
+              nota: 'Puntos de bienvenida al Club Jazmín'
+            })
+          });
+
+          // ── Éxito ──
+          registroForm.style.display = 'none';
+          document.getElementById('registroSuccess').classList.add('visible');
+          window.scrollTo({ top: document.getElementById('registro').offsetTop - 80, behavior: 'smooth' });
+
+        } catch(err) {
+          console.error('Error registro:', err);
+          btn.textContent = 'Error — intentá de nuevo';
+          btn.style.background = '#c52c2e';
+          btn.disabled = false;
+          setTimeout(() => {
+            btn.textContent = 'Unirme al Club';
+            btn.style.background = '';
+          }, 4000);
+        }
+      });
+    }
+  </script>
 </body>
 </html>
