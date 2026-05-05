@@ -1272,6 +1272,11 @@
     // Collaborative Filtering real + Cross-selling + Tipo de piel
     // ══════════════════════════════════════
 
+    function escJS(str) {
+      if (!str) return '';
+      return String(str).replace(/'/g, '\u2019').replace(/`/g, '\u0060');
+    }
+
     async function cargarRecomendaciones(clienta, compras, sbProductos) {
       const container = document.getElementById('recoContainer');
       const recomendaciones = [];
@@ -1483,9 +1488,9 @@
             <div class="reco-card">
               <p class="reco-motivo ${motivoClass[r.motivo] || ''}">${r.motivoLabel}</p>
               ${r.categoria ? `<p class="reco-categoria">${r.categoria}</p>` : ''}
-              <p class="reco-nombre">${r.nombre}</p>
-              <p class="reco-marca">${r.marca || ''}</p>
-              <p class="reco-razon">${r.razon}</p>
+              <p class="reco-nombre">${escJS(r.nombre)}</p>
+              <p class="reco-marca">${escJS(r.marca)}</p>
+              <p class="reco-razon">${escJS(r.razon)}</p>
               ${r.popularidad ? `
                 <div class="reco-popularity">
                   <div class="reco-pop-bar">
