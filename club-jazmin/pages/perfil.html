@@ -1570,7 +1570,7 @@
           if (topCF.length > 0) {
             const skusCF = topCF.map(r => r.sku);
             const catalogoCF = await sbGet('catalogo_productos',
-              `sku=in.(${skusCF.join(',')})&select=nombre,marca,categoria,sku`
+              `sku=in.(${skusCF.join(',')})&select=nombre,nombre_tiendanube,marca,categoria,sku,url_tiendanube`
             );
             const catMap = {};
             (catalogoCF || []).forEach(p => { catMap[p.sku] = p; });
@@ -1629,15 +1629,16 @@
 
           if (categoriasCross.size > 0) {
             const prodsCross = await sbGet('catalogo_productos',
-              `categoria=in.(${[...categoriasCross].slice(0,5).join(',')})&activo=eq.true&limit=6`
+              `categoria=in.(${[...categoriasCross].slice(0,5).join(',')})&activo=eq.true&limit=6&select=nombre,nombre_tiendanube,marca,categoria,sku,url_tiendanube`
             );
             (prodsCross || []).slice(0, 6 - recomendaciones.length).forEach(p => {
               if (!recomendaciones.find(r => r.nombre === p.nombre)) {
                 const origen = crossReglas.find(r => r.categoria_destino === p.categoria)?.categoria_origen;
                 recomendaciones.push({
-                  nombre: p.nombre,
+                  nombre: p.nombre_tiendanube || p.nombre,
                   marca: p.marca,
                   categoria: p.categoria,
+                  url: p.url_tiendanube || null,
                   motivo: 'cross',
                   motivoLabel: 'Complementa tu rutina',
                   razon: origen ? `Ideal para combinar con tu ${origen}` : 'Completa tu rutina de maquillaje',
@@ -1651,7 +1652,7 @@
         // ── CAPA 3: Tipo de piel ──
         if (tipoPiel && recomendaciones.length < 6) {
           const prodsPiel = await sbGet('catalogo_productos',
-            `activo=eq.true&limit=30`
+            `activo=eq.true&limit=30&select=nombre,nombre_tiendanube,marca,categoria,sku,url_tiendanube,tipo_piel`
           );
           const filtradosPiel = (prodsPiel || []).filter(p =>
             p.tipo_piel && Array.isArray(p.tipo_piel) &&
@@ -1662,9 +1663,10 @@
             .slice(0, 6 - recomendaciones.length)
             .forEach(p => {
               recomendaciones.push({
-                nombre: p.nombre,
+                nombre: p.nombre_tiendanube || p.nombre,
                 marca: p.marca,
                 categoria: p.categoria,
+                url: p.url_tiendanube || null,
                 motivo: 'piel',
                 motivoLabel: 'Para tu tipo de piel',
                 razon: `Recomendado para piel ${tipoPiel}`,
@@ -1726,12 +1728,10 @@
                   </div>
                   <span class="reco-pop-label">${r.popularidad}% afinidad</span>
                 </div>` : ''}
-              <a class="reco-ver-btn"
-                href="#"
-                onclick="window.open('https://jazminderosas.com/search/?q='+encodeURIComponent((r.nombre||'').split(' ').slice(0,3).join(' ')),'_blank');return false;"
-                target="_blank" rel="noopener">
-                Ver en tienda →
-              </a>
+              ${r.url
+                ? `<a class="reco-ver-btn" href="${r.url}" target="_blank" rel="noopener">Ver en tienda →</a>`
+                : `<a class="reco-ver-btn" href="https://jazminderosas.com/search/?q=${encodeURIComponent((r.nombre||'').split(' ').slice(0,3).join(' '))}" target="_blank" rel="noopener">Buscar en tienda →</a>`
+              }
             </div>
           `).join('')}
         </div>`;
