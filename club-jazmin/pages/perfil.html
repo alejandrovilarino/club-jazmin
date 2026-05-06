@@ -1727,7 +1727,8 @@
                   <span class="reco-pop-label">${r.popularidad}% afinidad</span>
                 </div>` : ''}
               <a class="reco-ver-btn"
-                href="https://jazminderosas.com.ar/search?q=${encodeURIComponent((r.nombre || '').split(' ').slice(0,4).join(' '))}"
+                href="#"
+                onclick="window.open('https://jazminderosas.com/search/?q='+encodeURIComponent((r.nombre||'').split(' ').slice(0,3).join(' ')),'_blank');return false;"
                 target="_blank" rel="noopener">
                 Ver en tienda →
               </a>
