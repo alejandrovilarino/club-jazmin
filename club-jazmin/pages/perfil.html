@@ -864,6 +864,28 @@
     /* ══════════════════════════════════════
        RECOMENDACIONES
     ══════════════════════════════════════ */
+
+    .reco-intro {
+      margin-bottom: 20px;
+      padding: 16px 20px;
+      background: var(--grafito);
+      border-radius: 12px;
+    }
+    .reco-intro-titulo {
+      font-family: var(--font-display);
+      font-size: 20px;
+      font-weight: 600;
+      color: var(--tiza);
+      margin-bottom: 6px;
+    }
+    .reco-intro-sub {
+      font-family: var(--font-body);
+      font-size: 12px;
+      font-weight: 300;
+      color: var(--vison);
+      line-height: 1.6;
+      margin: 0;
+    }
     .reco-grid {
       display: grid;
       grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
@@ -1026,7 +1048,11 @@
 
       <!-- RECOMENDACIONES -->
       <div class="perfil-section">
-        <p class="perfil-section-label">Para vos</p>
+        <p class="perfil-section-label">Selección para vos</p>
+        <div class="reco-intro">
+          <p class="reco-intro-titulo" id="recoTitulo">Elegido en base a tu rutina</p>
+          <p class="reco-intro-sub" id="recoSub">Basado en lo que compraste, te sugerimos estos productos que otras clientas con tu perfil eligen.</p>
+        </div>
         <div id="recoContainer">
           <div class="loading">
             <span class="loading-dot"></span>
@@ -1630,6 +1656,30 @@
             Seguí comprando para recibir recomendaciones personalizadas basadas en tu historial.
           </div>`;
           return;
+        }
+
+        // Personalizar título según qué capa dominó
+        const tituloEl = document.getElementById('recoTitulo');
+        const subEl = document.getElementById('recoSub');
+        if (tituloEl && subEl) {
+          const tieneCF = recomendaciones.some(r => r.motivo === 'cf');
+          const tieneCross = recomendaciones.some(r => r.motivo === 'cross');
+          const nombreCorto = (clienta.nombre || '').split(' ')[0];
+
+          if (tieneCF && skusHistoricos.size > 0) {
+            tituloEl.textContent = `Elegido para ${nombreCorto}`;
+            subEl.textContent = `Basado en tu historial de compras y en lo que otras clientas con tu perfil eligen. Como el servicio personalizado de Jazmín, pero siempre disponible.`;
+          } else if (tieneCross && categoriasCompradas.size > 0) {
+            const cats = [...categoriasCompradas].slice(0,2).join(' y ');
+            tituloEl.textContent = `Para completar tu rutina`;
+            subEl.textContent = `Tenés ${cats} en tu historial. Estas son las piezas que las clientas de Jazmín agregan para completar su look.`;
+          } else if (tipoPiel) {
+            tituloEl.textContent = `Para piel ${tipoPiel}`;
+            subEl.textContent = `Selección pensada para tu tipo de piel. Los mismos criterios que usamos en tienda para asesorarte.`;
+          } else {
+            tituloEl.textContent = `Selección para ${nombreCorto}`;
+            subEl.textContent = `Cuanto más comprás y completás tu Skinbook, más precisa se vuelve tu selección.`;
+          }
         }
 
         const motivoClass = {
