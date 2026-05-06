@@ -1060,8 +1060,163 @@
         </div>
       </div>
 
+      <!-- PREMIOS -->
+      <div class="perfil-section">
+        <p class="perfil-section-label">Próximos premios</p>
+        <div id="premiosContainer">
+          <div class="loading">
+            <span class="loading-dot"></span>
+            <span class="loading-dot"></span>
+            <span class="loading-dot"></span>
+          </div>
+        </div>
+      </div>
+
+      <!-- RECOMENDACIONES -->
+      <div class="perfil-section">
+        <p class="perfil-section-label">Recomendaciones para vos</p>
+        <div id="recoContainer">
+          <div class="loading">
+            <span class="loading-dot"></span>
+            <span class="loading-dot"></span>
+            <span class="loading-dot"></span>
+          </div>
+        </div>
+      </div>
+
+      <!-- SKINBOOK -->
+      <div class="perfil-section" id="skinbookSection">
+        <p class="perfil-section-label">Skinbook</p>
+
+        <div class="sb-nivel-card" id="sbNivelCard">
+          <div class="sb-nivel-emoji" id="sbNivelEmoji">🔍</div>
+          <div class="sb-nivel-info">
+            <div class="sb-nivel-nombre" id="sbNivelNombre">Exploradora</div>
+            <div class="sb-nivel-desc" id="sbNivelDesc">Está probando y descubriendo</div>
+            <div class="sb-nivel-progress">
+              <div class="sb-nivel-stat"><strong id="sbTotalProductos">0</strong> productos</div>
+              <div class="sb-nivel-stat"><strong id="sbTotalReseñas">0</strong> reseñas</div>
+            </div>
+          </div>
+          <span class="sb-next-nivel" id="sbNextNivel"></span>
+        </div>
+
+        <div class="sb-share-card">
+          <div class="sb-share-preview">
+            <div class="sb-share-preview-nombre" id="sbShareNombre">—</div>
+            <div class="sb-share-preview-nivel" id="sbShareNivel">Exploradora · Skinbook</div>
+            <div class="sb-share-stats">
+              <div class="sb-share-stat"><strong id="sbShareProds">0</strong><span>Productos</span></div>
+              <div class="sb-share-stat"><strong id="sbShareReseñas">0</strong><span>Reseñas</span></div>
+              <div class="sb-share-stat"><strong id="sbSharePuntos">0</strong><span>Puntos Club</span></div>
+            </div>
+          </div>
+          <p class="sb-share-sub">Compartí tu perfil de belleza en Instagram y mostrá tu nivel.</p>
+          <button class="sb-share-btn" id="sbShareBtn">Compartir mi perfil</button>
+        </div>
+
+        <div class="sb-tabs">
+          <button class="sb-tab active" data-tab="sbTabProductos">Mis productos</button>
+          <button class="sb-tab" data-tab="sbTabReseñas">Reseñas</button>
+        </div>
+
+        <div class="sb-tab-content active" id="sbTabProductos">
+          <button class="sb-add-btn" id="sbAddBtn">+ Agregar producto</button>
+          <div class="sb-productos-grid" id="sbProductosGrid">
+            <div class="loading"><span class="loading-dot"></span><span class="loading-dot"></span><span class="loading-dot"></span></div>
+          </div>
+        </div>
+
+        <div class="sb-tab-content" id="sbTabReseñas">
+          <div id="sbReseñasContainer">
+            <div class="loading"><span class="loading-dot"></span><span class="loading-dot"></span><span class="loading-dot"></span></div>
+          </div>
+        </div>
+      </div>
+
     </div>
   </div>
+
+  <!-- MODAL: Agregar producto al Skinbook -->
+  <div class="sb-modal-overlay" id="sbModal">
+    <div class="sb-modal">
+      <div class="sb-modal-header">
+        <p class="sb-modal-title">Agregar producto</p>
+        <button class="sb-modal-close" id="sbModalClose">✕</button>
+      </div>
+      <form id="sbProductoForm">
+        <div class="sb-form-grid">
+          <div class="sb-form-group">
+            <label class="sb-label" for="sbMarca">Marca</label>
+            <input class="sb-input" type="text" id="sbMarca" placeholder="NYX, Maybelline..." required/>
+          </div>
+          <div class="sb-form-group">
+            <label class="sb-label" for="sbProductoNombre">Producto</label>
+            <input class="sb-input" type="text" id="sbProductoNombre" placeholder="Base True Match..." required/>
+          </div>
+        </div>
+        <div class="sb-form-grid">
+          <div class="sb-form-group">
+            <label class="sb-label" for="sbCategoria">Categoría</label>
+            <select class="sb-select" id="sbCategoria" required>
+              <option value="" disabled selected>Seleccioná</option>
+              <option value="base">Base</option>
+              <option value="corrector">Corrector</option>
+              <option value="polvo">Polvo</option>
+              <option value="labial">Labial</option>
+              <option value="sombra">Sombra</option>
+              <option value="delineador">Delineador</option>
+              <option value="mascara">Máscara</option>
+              <option value="rubor">Rubor / Blush</option>
+              <option value="iluminador">Iluminador</option>
+              <option value="contorno">Contorno</option>
+              <option value="skincare">Skincare</option>
+              <option value="protector">Protector solar</option>
+              <option value="primer">Primer</option>
+              <option value="fijador">Fijador</option>
+              <option value="otro">Otro</option>
+            </select>
+          </div>
+          <div class="sb-form-group">
+            <label class="sb-label" for="sbTono">Tono (opcional)</label>
+            <input class="sb-input" type="text" id="sbTono" placeholder="N°3, Warm Beige..."/>
+          </div>
+        </div>
+        <div class="sb-form-group">
+          <label class="sb-label" for="sbEstado">Estado</label>
+          <select class="sb-select" id="sbEstado">
+            <option value="usando">Lo estoy usando</option>
+            <option value="usado">Lo usé antes</option>
+            <option value="quiero_probar">Quiero probarlo</option>
+          </select>
+        </div>
+        <div class="sb-form-group">
+          <label class="sb-label">Puntaje</label>
+          <div class="sb-stars-select" id="sbStarsSelect">
+            <button type="button" class="sb-star-btn" data-star="1">★</button>
+            <button type="button" class="sb-star-btn" data-star="2">★</button>
+            <button type="button" class="sb-star-btn" data-star="3">★</button>
+            <button type="button" class="sb-star-btn" data-star="4">★</button>
+            <button type="button" class="sb-star-btn" data-star="5">★</button>
+          </div>
+        </div>
+        <div class="sb-form-group">
+          <label class="sb-label" for="sbComentario">¿Qué te pareció?</label>
+          <textarea class="sb-input" id="sbComentario" rows="3" placeholder="Contá tu experiencia..." style="resize:vertical;"></textarea>
+        </div>
+        <div class="sb-form-group">
+          <label class="sb-label" for="sbVolveriaComprar">¿Lo volverías a comprar?</label>
+          <select class="sb-select" id="sbVolveriaComprar">
+            <option value="">No sé todavía</option>
+            <option value="true">Sí, definitivamente</option>
+            <option value="false">No</option>
+          </select>
+        </div>
+        <button type="submit" class="sb-submit-btn" id="sbProductoSubmit">Guardar producto</button>
+      </form>
+    </div>
+  </div>
+
 
   <footer>
     <p class="footer-logo">CLUB <em>JAZMÍN</em> DE ROSAS</p>
