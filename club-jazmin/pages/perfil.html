@@ -886,6 +886,29 @@
       line-height: 1.6;
       margin: 0;
     }
+
+    .reco-ver-btn {
+      display: block;
+      width: 100%;
+      margin-top: 12px;
+      padding: 9px;
+      background: transparent;
+      border: 1px solid var(--grafito);
+      border-radius: 6px;
+      font-family: var(--font-body);
+      font-size: 10px;
+      letter-spacing: 0.14em;
+      text-transform: uppercase;
+      color: var(--grafito);
+      text-align: center;
+      text-decoration: none;
+      transition: background 0.2s, color 0.2s;
+      cursor: pointer;
+    }
+    .reco-ver-btn:hover {
+      background: var(--grafito);
+      color: var(--tiza);
+    }
     .reco-grid {
       display: grid;
       grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
@@ -1703,6 +1726,11 @@
                   </div>
                   <span class="reco-pop-label">${r.popularidad}% afinidad</span>
                 </div>` : ''}
+              <a class="reco-ver-btn"
+                href="https://jazminderosas.com.ar/search?q=${encodeURIComponent((r.nombre || '').split(' ').slice(0,4).join(' '))}"
+                target="_blank" rel="noopener">
+                Ver en tienda →
+              </a>
             </div>
           `).join('')}
         </div>`;
