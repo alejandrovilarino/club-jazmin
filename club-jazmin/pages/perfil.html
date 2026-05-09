@@ -1616,7 +1616,11 @@
         });
         (sbProductos || []).forEach(p => { if (p.categoria) categoriasCompradas.add(p.categoria); });
 
-        if (categoriasCompradas.size > 0 && recomendaciones.length < 4) {
+        // Si no hay categorías detectadas, usar set base para clientas nuevas
+        if (categoriasCompradas.size === 0) {
+          ['base', 'labial', 'mascara'].forEach(c => categoriasCompradas.add(c));
+        }
+        if (recomendaciones.length < 4) {
           const cats = [...categoriasCompradas];
           const crossReglas = await sbGet('cross_selling_reglas',
             `categoria_origen=in.(${cats.join(',')})&order=prioridad.asc&limit=10`
@@ -1627,9 +1631,14 @@
               .filter(c => !categoriasCompradas.has(c))
           );
 
-          if (categoriasCross.size > 0) {
+          // Si no hay reglas, mostrar productos de categorías populares
+          const categsParaBuscar = categoriasCross.size > 0
+            ? [...categoriasCross].slice(0,5)
+            : ['corrector', 'polvo', 'primer', 'rubor', 'iluminador'];
+
+          if (categsParaBuscar.length > 0) {
             const prodsCross = await sbGet('catalogo_productos',
-              `categoria=in.(${[...categoriasCross].slice(0,5).join(',')})&activo=eq.true&limit=6&select=nombre,nombre_tiendanube,marca,categoria,sku,url_tiendanube`
+              `categoria=in.(${categsParaBuscar.join(',')})&activo=eq.true&limit=6&select=nombre,nombre_tiendanube,marca,categoria,sku,url_tiendanube&url_tiendanube=not.is.null`
             );
             (prodsCross || []).slice(0, 6 - recomendaciones.length).forEach(p => {
               if (!recomendaciones.find(r => r.nombre === p.nombre)) {
@@ -1650,7 +1659,7 @@
         }
 
         // ── CAPA 3: Tipo de piel ──
-        if (tipoPiel && recomendaciones.length < 6) {
+        if (tipoPiel) {
           const prodsPiel = await sbGet('catalogo_productos',
             `activo=eq.true&limit=30&select=nombre,nombre_tiendanube,marca,categoria,sku,url_tiendanube,tipo_piel`
           );
@@ -1676,10 +1685,29 @@
         }
 
         // ── Renderizar ──
+        // Si todavía no hay recomendaciones, mostrar productos populares con URL
         if (recomendaciones.length === 0) {
-          container.innerHTML = `<div class="empty-state">
-            Seguí comprando para recibir recomendaciones personalizadas basadas en tu historial.
-          </div>`;
+          // Traer productos de categorías de maquillaje principales con URL
+          const categsPopulares = ['base','labial','mascara','corrector','rubor','sombra'];
+          const populares = await sbGet('catalogo_productos',
+            `activo=eq.true&url_tiendanube=not.is.null&categoria=in.(${categsPopulares.join(',')})&limit=6&select=nombre,nombre_tiendanube,marca,categoria,url_tiendanube`
+          );
+          (populares || []).forEach(p => {
+            recomendaciones.push({
+              nombre: p.nombre_tiendanube || p.nombre,
+              marca: p.marca,
+              categoria: p.categoria,
+              url: p.url_tiendanube,
+              motivo: 'popular',
+              motivoLabel: 'Populares en Jazmín',
+              razon: 'Elegido por clientas de Jazmín de Rosas',
+              popularidad: 88
+            });
+          });
+        }
+
+        if (recomendaciones.length === 0) {
+          container.innerHTML = '<div class="empty-state">Completá tu perfil para recibir recomendaciones personalizadas.</div>';
           return;
         }
 
@@ -1710,7 +1738,8 @@
         const motivoClass = {
           cf: 'reco-motivo-similar',
           cross: 'reco-motivo-cross',
-          piel: 'reco-motivo-piel'
+          piel: 'reco-motivo-piel',
+          popular: 'reco-motivo-cross'
         };
 
         container.innerHTML = `<div class="reco-grid">
