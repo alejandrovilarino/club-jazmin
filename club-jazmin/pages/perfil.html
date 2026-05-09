@@ -1802,7 +1802,77 @@
     // MOTOR DE RECOMENDACIONES
     // ══════════════════════════════════════
 
-        async function cargarSkinbook(clientaId, nombreClienta, puntosClienta) {
+    
+    // ══════════════════════════════════════
+    // SKINBOOK — funciones auxiliares
+    // ══════════════════════════════════════
+
+    const PREGUNTAS_POR_CATEGORIA = {
+      base:      ['¿Cómo fue la cobertura?', '¿Cuánto te duró en la piel?', '¿Se adaptó a tu tono?'],
+      corrector: ['¿Cubrió bien las ojeras o manchas?', '¿Se mantuvo todo el día?'],
+      labial:    ['¿Cómo fue la hidratación?', '¿Te duró el color?'],
+      mascara:   ['¿Alargó y definió bien?', '¿Se corrió durante el día?'],
+      sombra:    ['¿Cómo fue la pigmentación?', '¿Se difuminó bien?'],
+      skincare:  ['¿Notaste resultados?', '¿Cómo quedó tu piel después de usarlo?'],
+      protector: ['¿Dejó sensación grasa?', '¿Se integró bien con el maquillaje?'],
+      default:   ['¿Qué te gustó?', '¿Qué mejorarías?']
+    };
+
+    function getNivelSkinbook(totalProductos, totalReseñas, niveles) {
+      if (!niveles || niveles.length === 0) return null;
+      const sorted = [...niveles].sort((a, b) => b.productos_minimos - a.productos_minimos);
+      return sorted.find(n =>
+        totalProductos >= n.productos_minimos && totalReseñas >= n.reseñas_minimas
+      ) || niveles.find(n => n.nombre === 'Exploradora') || niveles[0];
+    }
+
+    function getNivelSiguiente(nivelActual, niveles) {
+      const sorted = [...niveles].sort((a, b) => a.productos_minimos - b.productos_minimos);
+      const idx = sorted.findIndex(n => n.id === nivelActual.id);
+      return sorted[idx + 1] || null;
+    }
+
+    function renderSbProductos(productos) {
+      const grid = document.getElementById('sbProductosGrid');
+      if (!grid) return;
+      if (productos.length === 0) {
+        grid.innerHTML = '<div class="empty-state" style="grid-column:1/-1;">Todavía no cargaste productos. ¡Agregá el primero!</div>';
+        return;
+      }
+      const stars = n => n ? '★'.repeat(n) + '☆'.repeat(5-n) : '';
+      const estadoLabel = { usando: 'Usando', usado: 'Usado', quiero_probar: 'Quiero probar' };
+      grid.innerHTML = productos.map(p => `
+        <div class="sb-producto-card">
+          ${p.es_de_jazmin ? '<span class="sb-prod-jazmin">Jazmín</span>' : ''}
+          <div class="sb-prod-categoria">${p.categoria || 'Producto'}</div>
+          <div class="sb-prod-nombre">${p.producto}</div>
+          <div class="sb-prod-marca">${p.marca}</div>
+          ${p.puntaje ? `<div class="sb-prod-stars">${stars(p.puntaje)}</div>` : ''}
+          <span class="sb-prod-estado estado-${p.estado}">${estadoLabel[p.estado] || p.estado}</span>
+        </div>
+      `).join('');
+    }
+
+    function renderSbReseñas(reseñas) {
+      const container = document.getElementById('sbReseñasContainer');
+      if (!container) return;
+      if (reseñas.length === 0) {
+        container.innerHTML = '<div class="empty-state">Todavía no dejaste reseñas. Las reseñas suman puntos al Club.</div>';
+        return;
+      }
+      const stars = n => n ? '★'.repeat(n) + '☆'.repeat(5-n) : '';
+      container.innerHTML = reseñas.map(r => `
+        <div class="sb-reseña-card">
+          <div class="sb-reseña-prod">${r.producto_nombre || 'Producto'}</div>
+          <div class="sb-reseña-marca">${r.marca || ''}</div>
+          ${r.puntaje ? `<div class="sb-prod-stars">${stars(r.puntaje)}</div>` : ''}
+          ${r.texto ? `<p style="font-size:13px;font-family:var(--font-body);font-weight:300;color:var(--grafito);line-height:1.6;margin-top:8px;">${r.texto}</p>` : ''}
+          <span class="sb-pts-ganados">+50 pts ganados</span>
+        </div>
+      `).join('');
+    }
+
+    async function cargarSkinbook(clientaId, nombreClienta, puntosClienta) {
       sbClientaId = clientaId;
       sbClientaNombre = nombreClienta;
       sbClientaPuntos = puntosClienta;
