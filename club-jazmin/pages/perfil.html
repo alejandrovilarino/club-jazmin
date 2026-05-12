@@ -1336,6 +1336,65 @@
       }, 20);
     }
 
+
+    async function cargarSkinbook(clientaId, nombreClienta, puntosClienta) {
+      sbClientaId = clientaId;
+      sbClientaNombre = nombreClienta;
+      sbClientaPuntos = puntosClienta;
+
+      const sbShareNombreEl = document.getElementById('sbShareNombre');
+      const sbSharePuntosEl = document.getElementById('sbSharePuntos');
+      if (sbShareNombreEl) sbShareNombreEl.textContent = nombreClienta;
+      if (sbSharePuntosEl) sbSharePuntosEl.textContent = puntosClienta.toLocaleString('es-AR');
+
+      sbNivelesData = await sbGet('skinbook_niveles', 'order=productos_minimos.asc') || [];
+
+      const productos = await sbGet('skinbook_productos', `clienta_id=eq.${clientaId}&order=creado_en.desc`) || [];
+      const totalProductos = productos.length;
+
+      const reseñas = await sbGet('skinbook', `clienta_id=eq.${clientaId}&select=id,producto_nombre,marca,puntaje,texto,creado_en&order=creado_en.desc`) || [];
+      const totalReseñas = reseñas.length;
+
+      const nivelActual = getNivelSkinbook(totalProductos, totalReseñas, sbNivelesData);
+      if (nivelActual) {
+        const sbNivelEmojiEl = document.getElementById('sbNivelEmoji');
+        const sbNivelNombreEl = document.getElementById('sbNivelNombre');
+        const sbNivelDescEl = document.getElementById('sbNivelDesc');
+        const sbShareNivelEl = document.getElementById('sbShareNivel');
+        const sbNextNivelEl = document.getElementById('sbNextNivel');
+
+        if (sbNivelEmojiEl) sbNivelEmojiEl.textContent = nivelActual.emoji || '✨';
+        if (sbNivelNombreEl) sbNivelNombreEl.textContent = nivelActual.nombre;
+        if (sbNivelDescEl) sbNivelDescEl.textContent = nivelActual.descripcion || '';
+        if (sbShareNivelEl) sbShareNivelEl.textContent = nivelActual.nombre + ' · Skinbook';
+
+        const siguiente = getNivelSiguiente(nivelActual, sbNivelesData);
+        if (siguiente && sbNextNivelEl) {
+          const faltanProds = Math.max(0, siguiente.productos_minimos - totalProductos);
+          const faltanRes = Math.max(0, siguiente.reseñas_minimas - totalReseñas);
+          let texto = 'Próximo: ' + siguiente.nombre;
+          if (faltanProds > 0) texto += ` · +${faltanProds} prod.`;
+          if (faltanRes > 0) texto += ` · +${faltanRes} reseñas`;
+          sbNextNivelEl.textContent = texto;
+        } else if (sbNextNivelEl) {
+          sbNextNivelEl.textContent = '✦ Nivel máximo';
+        }
+      }
+
+      const sbTotalProductosEl = document.getElementById('sbTotalProductos');
+      const sbTotalReseñasEl = document.getElementById('sbTotalReseñas');
+      const sbShareProdsEl = document.getElementById('sbShareProds');
+      const sbShareReseñasEl = document.getElementById('sbShareReseñas');
+
+      if (sbTotalProductosEl) sbTotalProductosEl.textContent = totalProductos;
+      if (sbTotalReseñasEl) sbTotalReseñasEl.textContent = totalReseñas;
+      if (sbShareProdsEl) sbShareProdsEl.textContent = totalProductos;
+      if (sbShareReseñasEl) sbShareReseñasEl.textContent = totalReseñas;
+
+      renderSbProductos(productos);
+      renderSbReseñas(reseñas);
+    }
+
     // Cargar perfil recibiendo objeto clienta directamente (desde magic link)
     async function cargarPerfilPorId(clienta) {
       const nombre  = clienta.nombre || 'Clienta';
