@@ -1017,15 +1017,34 @@
 
   <!-- LOGIN -->
   <div class="login-screen" id="loginScreen">
-    <p class="login-eyebrow">Club Jazmín de Rosas</p>
-    <h1 class="login-title">Mi perfil</h1>
-    <p class="login-sub">Ingresá tu DNI para ver<br>tus puntos y beneficios</p>
-    <div class="login-form">
-      <input class="login-input" type="text" id="dniInput" placeholder="DNI sin puntos" maxlength="9" inputmode="numeric"/>
-      <button class="login-btn" id="loginBtn">Ver mi perfil</button>
-      <p class="login-error" id="loginError"></p>
+
+    <!-- Estado 1: Ingresar email -->
+    <div id="loginStep1">
+      <p class="login-eyebrow">Club Jazmín de Rosas</p>
+      <h1 class="login-title">Mi perfil</h1>
+      <p class="login-sub">Ingresá tu email y te enviamos<br>un link de acceso instantáneo</p>
+      <div class="login-form">
+        <input class="login-input" type="email" id="emailInput" placeholder="tu@email.com" inputmode="email" autocomplete="email"/>
+        <button class="login-btn" id="loginBtn">Enviar link de acceso</button>
+        <p class="login-error" id="loginError"></p>
+      </div>
+      <p class="login-register">¿Todavía no sos miembro? <a href="../index.html#registro">Registrate acá</a></p>
     </div>
-    <p class="login-register">¿Todavía no sos miembro? <a href="../index.html#registro">Registrate acá</a></p>
+
+    <!-- Estado 2: Email enviado -->
+    <div id="loginStep2" style="display:none;text-align:center;">
+      <div style="font-size:40px;margin-bottom:16px;">🌹</div>
+      <p class="login-eyebrow">Club Jazmín de Rosas</p>
+      <h1 class="login-title" style="font-size:clamp(24px,5vw,38px);">Revisá tu email</h1>
+      <p class="login-sub">Te enviamos un link de acceso a<br><strong id="emailEnviado" style="color:var(--tiza);"></strong></p>
+      <p style="font-family:var(--font-body);font-size:12px;color:#3a3a3a;margin-top:16px;">
+        El link expira en 15 minutos.<br>Si no llega, revisá tu carpeta de spam.
+      </p>
+      <button class="login-btn" id="reenviarBtn" style="margin-top:24px;background:transparent;border:1px solid #3a3a3a;color:var(--vison);">
+        Reenviar link
+      </button>
+    </div>
+
   </div>
 
   <!-- PERFIL -->
@@ -1314,6 +1333,57 @@
         el.textContent = current.toLocaleString('es-AR');
         if (current >= target) clearInterval(interval);
       }, 20);
+    }
+
+    // Cargar perfil recibiendo objeto clienta directamente (desde magic link)
+    async function cargarPerfilPorId(clienta) {
+      const nombre  = clienta.nombre || 'Clienta';
+      const puntos  = clienta.puntos_actuales || 0;
+      const nivel   = getNivel(puntos);
+      const nivelInfo = NIVELES[nivel];
+
+      document.getElementById('perfilAvatar').textContent = nombre.charAt(0).toUpperCase();
+      document.getElementById('perfilNombre').textContent = nombre;
+      const nivelBadge = document.getElementById('perfilNivel');
+      nivelBadge.textContent = '✦ ' + nivel;
+      nivelBadge.className = `perfil-nivel-badge nivel-${nivel}`;
+
+      animarNumero(document.getElementById('puntosNumero'), puntos);
+
+      if (nivelInfo.nextPts) {
+        const pct = Math.min((puntos / nivelInfo.nextPts) * 100, 100);
+        document.getElementById('puntosProximo').textContent = `Próximo nivel: ${nivelInfo.next} (${nivelInfo.nextPts.toLocaleString('es-AR')} pts)`;
+        setTimeout(() => { document.getElementById('progressFill').style.width = pct + '%'; }, 300);
+        document.getElementById('progressActual').textContent = puntos.toLocaleString('es-AR') + ' pts';
+        document.getElementById('progressSiguiente').textContent = nivelInfo.nextPts.toLocaleString('es-AR') + ' pts';
+      } else {
+        document.getElementById('puntosProximo').textContent = '✦ Nivel máximo alcanzado';
+        document.getElementById('progressFill').style.width = '100%';
+        document.getElementById('progressFill').style.background = '#a95aaf';
+        document.getElementById('progressActual').textContent = puntos.toLocaleString('es-AR') + ' pts';
+        document.getElementById('progressSiguiente').textContent = 'Alta';
+      }
+
+      const movimientos = await sbGet('movimientos_puntos',
+        `clienta_id=eq.${clienta.id}&select=tipo,origen,puntos,nota,creado_en&order=creado_en.desc&limit=20`
+      );
+      renderHistorial(movimientos || []);
+
+      const compras = await sbGet('compras',
+        `clienta_id=eq.${clienta.id}&select=canal,monto,productos,puntos_generados,fecha&order=fecha.desc&limit=10`
+      );
+      renderCompras(compras || []);
+      window._sbCompras = compras || [];
+
+      const beneficios = await sbGet('beneficios', 'activo=eq.true&select=nombre,descripcion,tipo,puntos_requeridos&order=puntos_requeridos.asc');
+      renderPremios(beneficios || [], puntos);
+
+      await cargarSkinbook(clienta.id, nombre, puntos);
+
+      const sbProds = await sbGet('skinbook_productos', `clienta_id=eq.${clienta.id}&select=categoria`);
+      await cargarRecomendaciones(clienta, compras || [], sbProds || []);
+
+      return clienta;
     }
 
     async function cargarPerfil(dni) {
@@ -1771,25 +1841,19 @@
       }
     }
 
-        // ── LOGIN FLOW ──
-    const loginScreen = document.getElementById('loginScreen');
-    const perfilScreen = document.getElementById('perfilScreen');
-    const dniInput = document.getElementById('dniInput');
-    const loginBtn = document.getElementById('loginBtn');
-    const loginError = document.getElementById('loginError');
-
-    // Verificar si hay sesión guardada
-    const dniGuardado = sessionStorage.getItem('club_jazmin_dni');
-    if (dniGuardado) {
-      mostrarCargando();
-      cargarPerfil(dniGuardado).then(clienta => {
-        if (clienta) mostrarPerfil();
-        else { sessionStorage.removeItem('club_jazmin_dni'); mostrarLogin(); }
-      });
-    }
+        // ── LOGIN FLOW — Magic Link ──
+    const loginScreen   = document.getElementById('loginScreen');
+    const perfilScreen  = document.getElementById('perfilScreen');
+    const emailInput    = document.getElementById('emailInput');
+    const loginBtn      = document.getElementById('loginBtn');
+    const loginError    = document.getElementById('loginError');
+    const loginStep1    = document.getElementById('loginStep1');
+    const loginStep2    = document.getElementById('loginStep2');
 
     function mostrarLogin() {
       loginScreen.style.display = 'flex';
+      if (loginStep1) loginStep1.style.display = 'block';
+      if (loginStep2) loginStep2.style.display = 'none';
       perfilScreen.classList.remove('visible');
     }
     function mostrarPerfil() {
@@ -1800,386 +1864,123 @@
       loginScreen.style.display = 'none';
     }
 
-    loginBtn.addEventListener('click', async () => {
-      const dni = dniInput.value.trim().replace(/\./g, '');
-      if (!dni || dni.length < 7) {
-        loginError.textContent = 'Ingresá un DNI válido.';
+    // Verificar token en URL
+    async function verificarToken() {
+      const params = new URLSearchParams(window.location.search);
+      const token = params.get('token');
+      if (!token) return false;
+      mostrarCargando();
+      try {
+        const links = await sbGet('magic_links', `token=eq.${token}&select=id,clienta_id,usado,expira_en`);
+        if (!links || links.length === 0) {
+          mostrarLogin();
+          if (loginError) loginError.textContent = 'Link inválido o ya utilizado.';
+          return false;
+        }
+        const link = links[0];
+        if (link.usado) {
+          mostrarLogin();
+          if (loginError) loginError.textContent = 'Este link ya fue utilizado. Solicitá uno nuevo.';
+          return false;
+        }
+        if (new Date(link.expira_en) < new Date()) {
+          mostrarLogin();
+          if (loginError) loginError.textContent = 'El link expiró. Solicitá uno nuevo.';
+          return false;
+        }
+        // Marcar como usado
+        await fetch(`${SB_URL}/rest/v1/magic_links?id=eq.${link.id}`, {
+          method: 'PATCH',
+          headers: { 'Content-Type': 'application/json', 'apikey': SB_KEY, 'Authorization': `Bearer ${SB_KEY}` },
+          body: JSON.stringify({ usado: true })
+        });
+        const clientas = await sbGet('clientas', `id=eq.${link.clienta_id}&select=id,nombre,puntos_actuales,nivel_id,tipo_piel,estilo_maquillaje,email,fecha_nacimiento`);
+        if (!clientas || clientas.length === 0) { mostrarLogin(); return false; }
+        sessionStorage.setItem('club_jazmin_clienta_id', link.clienta_id);
+        await cargarPerfilPorId(clientas[0]);
+        mostrarPerfil();
+        window.history.replaceState({}, '', window.location.pathname);
+        return true;
+      } catch(e) {
+        console.error('Error token:', e);
+        mostrarLogin();
+        return false;
+      }
+    }
+
+    // Verificar sesión guardada
+    async function verificarSesion() {
+      const clientaId = sessionStorage.getItem('club_jazmin_clienta_id');
+      if (!clientaId) return false;
+      mostrarCargando();
+      try {
+        const clientas = await sbGet('clientas', `id=eq.${clientaId}&select=id,nombre,puntos_actuales,nivel_id,tipo_piel,estilo_maquillaje,email,fecha_nacimiento`);
+        if (!clientas || clientas.length === 0) {
+          sessionStorage.removeItem('club_jazmin_clienta_id');
+          mostrarLogin();
+          return false;
+        }
+        await cargarPerfilPorId(clientas[0]);
+        mostrarPerfil();
+        return true;
+      } catch(e) { mostrarLogin(); return false; }
+    }
+
+    // Inicializar
+    (async () => {
+      const tokenOk = await verificarToken();
+      if (!tokenOk) {
+        const sesionOk = await verificarSesion();
+        if (!sesionOk) mostrarLogin();
+      }
+    })();
+
+    // Enviar magic link
+    loginBtn?.addEventListener('click', async () => {
+      const email = emailInput?.value.trim().toLowerCase();
+      if (!email || !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) {
+        if (loginError) loginError.textContent = 'Ingresá un email válido.';
         return;
       }
-      loginBtn.textContent = 'Buscando...';
+      loginBtn.textContent = 'Enviando...';
       loginBtn.disabled = true;
-      loginError.textContent = '';
-
-      const clienta = await cargarPerfil(dni);
-      if (clienta) {
-        sessionStorage.setItem('club_jazmin_dni', dni);
-        mostrarPerfil();
-      } else {
-        loginError.textContent = 'No encontramos una cuenta con ese DNI. ¿Ya te registraste?';
-        loginBtn.textContent = 'Ver mi perfil';
+      if (loginError) loginError.textContent = '';
+      try {
+        const res = await fetch(`${SB_URL}/functions/v1/send-magic-link`, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json', 'apikey': SB_KEY, 'Authorization': `Bearer ${SB_KEY}` },
+          body: JSON.stringify({ email })
+        });
+        const data = await res.json();
+        if (data.ok) {
+          const elEmail = document.getElementById('emailEnviado');
+          if (elEmail) elEmail.textContent = email;
+          if (loginStep1) loginStep1.style.display = 'none';
+          if (loginStep2) loginStep2.style.display = 'block';
+        } else {
+          if (loginError) loginError.textContent = data.error || 'Error al enviar. Intentá de nuevo.';
+          loginBtn.textContent = 'Enviar link de acceso';
+          loginBtn.disabled = false;
+        }
+      } catch(e) {
+        if (loginError) loginError.textContent = 'Error de conexión. Intentá de nuevo.';
+        loginBtn.textContent = 'Enviar link de acceso';
         loginBtn.disabled = false;
       }
     });
 
-    dniInput.addEventListener('keydown', e => {
-      if (e.key === 'Enter') loginBtn.click();
+    emailInput?.addEventListener('keydown', e => { if (e.key === 'Enter') loginBtn?.click(); });
+
+    document.getElementById('reenviarBtn')?.addEventListener('click', () => {
+      if (loginStep2) loginStep2.style.display = 'none';
+      if (loginStep1) loginStep1.style.display = 'block';
+      if (loginBtn) { loginBtn.textContent = 'Enviar link de acceso'; loginBtn.disabled = false; }
     });
 
-
-
-    // ══════════════════════════════════════
-    // MOTOR DE RECOMENDACIONES
-    // ══════════════════════════════════════
-
-    
-    // ══════════════════════════════════════
-    // SKINBOOK — funciones auxiliares
-    // ══════════════════════════════════════
-
-    const PREGUNTAS_POR_CATEGORIA = {
-      base:      ['¿Cómo fue la cobertura?', '¿Cuánto te duró en la piel?', '¿Se adaptó a tu tono?'],
-      corrector: ['¿Cubrió bien las ojeras o manchas?', '¿Se mantuvo todo el día?'],
-      labial:    ['¿Cómo fue la hidratación?', '¿Te duró el color?'],
-      mascara:   ['¿Alargó y definió bien?', '¿Se corrió durante el día?'],
-      sombra:    ['¿Cómo fue la pigmentación?', '¿Se difuminó bien?'],
-      skincare:  ['¿Notaste resultados?', '¿Cómo quedó tu piel después de usarlo?'],
-      protector: ['¿Dejó sensación grasa?', '¿Se integró bien con el maquillaje?'],
-      default:   ['¿Qué te gustó?', '¿Qué mejorarías?']
-    };
-
-    function getNivelSkinbook(totalProductos, totalReseñas, niveles) {
-      if (!niveles || niveles.length === 0) return null;
-      const sorted = [...niveles].sort((a, b) => b.productos_minimos - a.productos_minimos);
-      return sorted.find(n =>
-        totalProductos >= n.productos_minimos && totalReseñas >= n.reseñas_minimas
-      ) || niveles.find(n => n.nombre === 'Exploradora') || niveles[0];
-    }
-
-    function getNivelSiguiente(nivelActual, niveles) {
-      const sorted = [...niveles].sort((a, b) => a.productos_minimos - b.productos_minimos);
-      const idx = sorted.findIndex(n => n.id === nivelActual.id);
-      return sorted[idx + 1] || null;
-    }
-
-    function renderSbProductos(productos) {
-      const grid = document.getElementById('sbProductosGrid');
-      if (!grid) return;
-      if (productos.length === 0) {
-        grid.innerHTML = '<div class="empty-state" style="grid-column:1/-1;">Todavía no cargaste productos. ¡Agregá el primero!</div>';
-        return;
-      }
-      const stars = n => n ? '★'.repeat(n) + '☆'.repeat(5-n) : '';
-      const estadoLabel = { usando: 'Usando', usado: 'Usado', quiero_probar: 'Quiero probar' };
-      grid.innerHTML = productos.map(p => `
-        <div class="sb-producto-card">
-          ${p.es_de_jazmin ? '<span class="sb-prod-jazmin">Jazmín</span>' : ''}
-          <div class="sb-prod-categoria">${p.categoria || 'Producto'}</div>
-          <div class="sb-prod-nombre">${p.producto}</div>
-          <div class="sb-prod-marca">${p.marca}</div>
-          ${p.puntaje ? `<div class="sb-prod-stars">${stars(p.puntaje)}</div>` : ''}
-          <span class="sb-prod-estado estado-${p.estado}">${estadoLabel[p.estado] || p.estado}</span>
-        </div>
-      `).join('');
-    }
-
-    function renderSbReseñas(reseñas) {
-      const container = document.getElementById('sbReseñasContainer');
-      if (!container) return;
-      if (reseñas.length === 0) {
-        container.innerHTML = '<div class="empty-state">Todavía no dejaste reseñas. Las reseñas suman puntos al Club.</div>';
-        return;
-      }
-      const stars = n => n ? '★'.repeat(n) + '☆'.repeat(5-n) : '';
-      container.innerHTML = reseñas.map(r => `
-        <div class="sb-reseña-card">
-          <div class="sb-reseña-prod">${r.producto_nombre || 'Producto'}</div>
-          <div class="sb-reseña-marca">${r.marca || ''}</div>
-          ${r.puntaje ? `<div class="sb-prod-stars">${stars(r.puntaje)}</div>` : ''}
-          ${r.texto ? `<p style="font-size:13px;font-family:var(--font-body);font-weight:300;color:var(--grafito);line-height:1.6;margin-top:8px;">${r.texto}</p>` : ''}
-          <span class="sb-pts-ganados">+50 pts ganados</span>
-        </div>
-      `).join('');
-    }
-
-    async function cargarSkinbook(clientaId, nombreClienta, puntosClienta) {
-      sbClientaId = clientaId;
-      sbClientaNombre = nombreClienta;
-      sbClientaPuntos = puntosClienta;
-
-      // Actualizar share preview
-      document.getElementById('sbShareNombre').textContent = nombreClienta;
-      document.getElementById('sbSharePuntos').textContent = puntosClienta.toLocaleString('es-AR');
-
-      // Cargar niveles
-      sbNivelesData = await sbGet('skinbook_niveles', 'order=productos_minimos.asc');
-
-      // Cargar productos
-      const productos = await sbGet('skinbook_productos',
-        `clienta_id=eq.${clientaId}&order=creado_en.desc`
-      );
-      const totalProductos = productos?.length || 0;
-
-      // Cargar reseñas
-      const reseñas = await sbGet('skinbook',
-        `clienta_id=eq.${clientaId}&select=id,producto_nombre,marca,puntaje,texto,creado_en&order=creado_en.desc`
-      );
-      const totalReseñas = reseñas?.length || 0;
-
-      // Actualizar nivel
-      const nivelActual = getNivelSkinbook(totalProductos, totalReseñas, sbNivelesData);
-      if (nivelActual) {
-        document.getElementById('sbNivelEmoji').textContent = nivelActual.emoji || '✨';
-        document.getElementById('sbNivelNombre').textContent = nivelActual.nombre;
-        document.getElementById('sbNivelDesc').textContent = nivelActual.descripcion || '';
-        document.getElementById('sbShareNivel').textContent = nivelActual.nombre + ' · Skinbook';
-
-        const siguiente = getNivelSiguiente(nivelActual, sbNivelesData);
-        if (siguiente) {
-          const faltanProds = Math.max(0, siguiente.productos_minimos - totalProductos);
-          const faltanRes = Math.max(0, siguiente.reseñas_minimas - totalReseñas);
-          let texto = 'Próximo: ' + siguiente.nombre;
-          if (faltanProds > 0) texto += ` · +${faltanProds} prod.`;
-          if (faltanRes > 0) texto += ` · +${faltanRes} reseñas`;
-          document.getElementById('sbNextNivel').textContent = texto;
-        } else {
-          document.getElementById('sbNextNivel').textContent = '✦ Nivel máximo';
-        }
-      }
-
-      // Actualizar stats
-      document.getElementById('sbTotalProductos').textContent = totalProductos;
-      document.getElementById('sbTotalReseñas').textContent = totalReseñas;
-      document.getElementById('sbShareProds').textContent = totalProductos;
-      document.getElementById('sbShareReseñas').textContent = totalReseñas;
-
-      // Renderizar
-      renderSbProductos(productos || []);
-      renderSbReseñas(reseñas || []);
-    }
-
-    function renderSbProductos(productos) {
-      const grid = document.getElementById('sbProductosGrid');
-      if (productos.length === 0) {
-        grid.innerHTML = '<div class="empty-state" style="grid-column:1/-1;">Todavía no cargaste productos. ¡Agregá el primero!</div>';
-        return;
-      }
-      const stars = n => n ? '★'.repeat(n) + '☆'.repeat(5-n) : '';
-      const estadoLabel = { usando: 'Usando', usado: 'Usado', quiero_probar: 'Quiero probar' };
-      grid.innerHTML = productos.map(p => `
-        <div class="sb-producto-card">
-          ${p.es_de_jazmin ? '<span class="sb-prod-jazmin">Jazmín</span>' : ''}
-          <div class="sb-prod-categoria">${p.categoria || 'Producto'}</div>
-          <div class="sb-prod-nombre">${p.producto}</div>
-          <div class="sb-prod-marca">${p.marca}</div>
-          ${p.puntaje ? `<div class="sb-prod-stars">${stars(p.puntaje)}</div>` : ''}
-          <span class="sb-prod-estado estado-${p.estado}">${estadoLabel[p.estado] || p.estado}</span>
-        </div>
-      `).join('');
-    }
-
-    function renderSbReseñas(reseñas) {
-      const container = document.getElementById('sbReseñasContainer');
-      if (reseñas.length === 0) {
-        container.innerHTML = '<div class="empty-state">Todavía no dejaste reseñas. Las reseñas suman puntos al Club.</div>';
-        return;
-      }
-      const stars = n => n ? '★'.repeat(n) + '☆'.repeat(5-n) : '';
-      container.innerHTML = reseñas.map(r => `
-        <div class="sb-reseña-card">
-          <div class="sb-reseña-prod">${r.producto_nombre || 'Producto'}</div>
-          <div class="sb-reseña-marca">${r.marca || ''}</div>
-          ${r.puntaje ? `<div class="sb-prod-stars">${stars(r.puntaje)}</div>` : ''}
-          ${r.texto ? `<p style="font-size:13px;font-family:var(--font-body);font-weight:300;color:var(--grafito);line-height:1.6;margin-top:8px;">${r.texto}</p>` : ''}
-          <span class="sb-pts-ganados">+50 pts ganados</span>
-        </div>
-      `).join('');
-    }
-
-    // ── Tabs ──
-    document.querySelectorAll('.sb-tab').forEach(tab => {
-      tab.addEventListener('click', () => {
-        document.querySelectorAll('.sb-tab').forEach(t => t.classList.remove('active'));
-        document.querySelectorAll('.sb-tab-content').forEach(c => c.classList.remove('active'));
-        tab.classList.add('active');
-        document.getElementById(tab.dataset.tab).classList.add('active');
-      });
-    });
-
-    // ── Modal ──
-    document.getElementById('sbAddBtn')?.addEventListener('click', () => {
-      document.getElementById('sbModal').classList.add('open');
-    });
-    document.getElementById('sbModalClose')?.addEventListener('click', () => {
-      document.getElementById('sbModal').classList.remove('open');
-    });
-    document.getElementById('sbModal')?.addEventListener('click', e => {
-      if (e.target === document.getElementById('sbModal'))
-        document.getElementById('sbModal').classList.remove('open');
-    });
-
-    // ── Estrellas ──
-    document.querySelectorAll('.sb-star-btn').forEach(btn => {
-      btn.addEventListener('click', () => {
-        sbPuntajeSeleccionado = parseInt(btn.dataset.star);
-        document.querySelectorAll('.sb-star-btn').forEach((b, i) => {
-          b.classList.toggle('active', i < sbPuntajeSeleccionado);
-        });
-      });
-      btn.addEventListener('mouseenter', () => {
-        const h = parseInt(btn.dataset.star);
-        document.querySelectorAll('.sb-star-btn').forEach((b, i) => {
-          b.style.color = i < h ? 'var(--amarillo)' : '';
-        });
-      });
-      btn.addEventListener('mouseleave', () => {
-        document.querySelectorAll('.sb-star-btn').forEach((b, i) => {
-          b.style.color = '';
-          b.classList.toggle('active', i < sbPuntajeSeleccionado);
-        });
-      });
-    });
-
-    // ── Guardar producto ──
-    document.getElementById('sbProductoForm')?.addEventListener('submit', async e => {
-      e.preventDefault();
-      if (!sbClientaId) return;
-
-      const submitBtn = document.getElementById('sbProductoSubmit');
-      submitBtn.textContent = 'Guardando...';
-      submitBtn.disabled = true;
-
-      const marca    = document.getElementById('sbMarca').value.trim();
-      const producto = document.getElementById('sbProductoNombre').value.trim();
-      const categoria= document.getElementById('sbCategoria').value;
-      const tono     = document.getElementById('sbTono').value.trim() || null;
-      const estado   = document.getElementById('sbEstado').value;
-      const comentario = document.getElementById('sbComentario').value.trim() || null;
-      const vcRaw    = document.getElementById('sbVolveriaComprar').value;
-      const volveria = vcRaw === 'true' ? true : vcRaw === 'false' ? false : null;
-
-      try {
-        // Guardar producto
-        const res = await fetch(`${SB_URL}/rest/v1/skinbook_productos`, {
-          method: 'POST',
-          headers: {
-            'Content-Type': 'application/json',
-            'apikey': SB_KEY,
-            'Authorization': `Bearer ${SB_KEY}`,
-            'Prefer': 'return=representation'
-          },
-          body: JSON.stringify({
-            clienta_id: sbClientaId,
-            marca, producto, categoria, tono, estado,
-            puntaje: sbPuntajeSeleccionado || null,
-            comentario,
-            volveria_comprar: volveria,
-            es_de_jazmin: false
-          })
-        });
-
-        if (!res.ok) throw new Error('Error al guardar');
-
-        const productoGuardado = await res.json();
-        const productoId = productoGuardado[0]?.id;
-
-        // Si tiene puntaje y comentario → crear reseña en skinbook y sumar puntos
-        if (sbPuntajeSeleccionado > 0 && comentario && productoId) {
-          await fetch(`${SB_URL}/rest/v1/skinbook`, {
-            method: 'POST',
-            headers: {
-              'Content-Type': 'application/json',
-              'apikey': SB_KEY,
-              'Authorization': `Bearer ${SB_KEY}`
-            },
-            body: JSON.stringify({
-              clienta_id: sbClientaId,
-              producto_nombre: producto,
-              marca,
-              puntaje: sbPuntajeSeleccionado,
-              texto: comentario,
-              puntos_otorgados: 50
-            })
-          });
-
-          // Sumar 50 puntos
-          await fetch(`${SB_URL}/rest/v1/movimientos_puntos`, {
-            method: 'POST',
-            headers: {
-              'Content-Type': 'application/json',
-              'apikey': SB_KEY,
-              'Authorization': `Bearer ${SB_KEY}`
-            },
-            body: JSON.stringify({
-              clienta_id: sbClientaId,
-              tipo: 'ganado',
-              origen: 'reseña',
-              puntos: 50,
-              nota: `Reseña de ${marca} ${producto}`
-            })
-          });
-
-          // Actualizar puntos en clientas
-          await fetch(`${SB_URL}/rest/v1/clientas?id=eq.${sbClientaId}`, {
-            method: 'PATCH',
-            headers: {
-              'Content-Type': 'application/json',
-              'apikey': SB_KEY,
-              'Authorization': `Bearer ${SB_KEY}`
-            },
-            body: JSON.stringify({ puntos_actuales: sbClientaPuntos + 50 })
-          });
-          sbClientaPuntos += 50;
-        }
-
-        // Cerrar modal y recargar
-        document.getElementById('sbModal').classList.remove('open');
-        document.getElementById('sbProductoForm').reset();
-        sbPuntajeSeleccionado = 0;
-        document.querySelectorAll('.sb-star-btn').forEach(b => b.classList.remove('active'));
-
-        // Recargar skinbook
-        await cargarSkinbook(sbClientaId, sbClientaNombre, sbClientaPuntos);
-
-        submitBtn.textContent = '¡Guardado!';
-        submitBtn.style.background = '#026359';
-        setTimeout(() => {
-          submitBtn.textContent = 'Guardar producto';
-          submitBtn.disabled = false;
-          submitBtn.style.background = '';
-        }, 2000);
-
-      } catch(err) {
-        console.error(err);
-        submitBtn.textContent = 'Error — intentá de nuevo';
-        submitBtn.disabled = false;
-        setTimeout(() => { submitBtn.textContent = 'Guardar producto'; }, 3000);
-      }
-    });
-
-    // ── Compartir perfil ──
-    document.getElementById('sbShareBtn')?.addEventListener('click', async () => {
-      const nivel = document.getElementById('sbNivelNombre').textContent;
-      const prods = document.getElementById('sbTotalProductos').textContent;
-      const reseñas = document.getElementById('sbTotalReseñas').textContent;
-      const texto = `Soy ${nivel} en Skinbook de Club Jazmín 💄\n${prods} productos · ${reseñas} reseñas\nclub.jazminderosas.com`;
-      if (navigator.share) {
-        try {
-          await navigator.share({ text: texto, url: 'https://club.jazminderosas.com' });
-        } catch(e) { console.log('Share cancelado'); }
-      } else {
-        await navigator.clipboard.writeText(texto);
-        const btn = document.getElementById('sbShareBtn');
-        const orig = btn.textContent;
-        btn.textContent = '¡Texto copiado!';
-        setTimeout(() => { btn.textContent = orig; }, 2000);
-      }
-    });
-
-    document.getElementById('logoutBtn').addEventListener('click', () => {
-      sessionStorage.removeItem('club_jazmin_dni');
+    document.getElementById('logoutBtn')?.addEventListener('click', () => {
+      sessionStorage.removeItem('club_jazmin_clienta_id');
       mostrarLogin();
-      dniInput.value = '';
-    });
+    });;
   </script>
 </body>
 </html>
