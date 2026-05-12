@@ -1295,6 +1295,7 @@
   <script>
     const SB_URL = 'https://qgsdqzqvrbkprbmehzcf.supabase.co';
     const SB_KEY = 'sb_publishable_0RGb096UtD0AQYRtukuNwg_zmLf3nwF';
+    const SB_SERVICE_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InFnc2RxenF2cmJrcHJibWVoemNmIiwicm9sZSI6InNlcnZpY2Vfcm9sZSIsImlhdCI6MTc3NzQ2NDIxNSwiZXhwIjoyMDkzMDQwMjE1fQ.trKQrBjynPyKjY6-GYyh2gE9gVUxZDvcx9jywxGzW5Q';
 
     const NIVELES = {
       'Inicial':    { min: 0,    max: 999,  next: 'Intermedia', nextPts: 1000  },
@@ -1948,7 +1949,7 @@
       try {
         const res = await fetch(`${SB_URL}/functions/v1/send-magic-link`, {
           method: 'POST',
-          headers: { 'Content-Type': 'application/json', 'apikey': SB_KEY, 'Authorization': `Bearer ${SB_KEY}` },
+          headers: { 'Content-Type': 'application/json', 'apikey': SB_SERVICE_KEY, 'Authorization': `Bearer ${SB_SERVICE_KEY}` },
           body: JSON.stringify({ email })
         });
         const data = await res.json();
