@@ -153,9 +153,10 @@
         </div>`).join('');
     }
 
-    function canjear(n, p) {
-      alert(`Para canjear "${n}" (${p} puntos), presentá tu perfil del Club en el local o escribinos por WhatsApp.`);
-    }
+function canjear(n, p) {
+      const msg = encodeURIComponent(`Hola! Quiero canjear mi beneficio del Club Jazmín:\n\n✨ ${n} (${p} puntos)\n\nMi email del Club es: `);
+      window.open(`https://wa.me/5492914061107?text=${msg}`, '_blank');
+      }
 
     document.getElementById('filtros').addEventListener('click', e => {
       const b = e.target.closest('.filtro-btn');
