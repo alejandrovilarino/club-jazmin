@@ -6,42 +6,163 @@
   <title>Beneficios — Club Jazmín</title>
   <link rel="stylesheet" href="../css/styles.css" />
   <style>
-    .beneficios-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); gap: 1.5rem; margin-top: 2rem; }
-    .beneficio-card { background: var(--color-surface, #1e1e1e); border: 1px solid var(--color-border, #2a2a2a); border-radius: 12px; padding: 1.5rem; display: flex; flex-direction: column; gap: 0.75rem; }
-    .beneficio-tipo { font-size: 0.7rem; letter-spacing: 0.15em; text-transform: uppercase; color: var(--color-accent, #df9fb1); font-weight: 500; }
-    .beneficio-nombre { font-family: Georgia, serif; font-size: 1.1rem; color: var(--color-text, #f1ebe6); line-height: 1.3; }
-    .beneficio-desc { font-size: 0.85rem; color: var(--color-muted, #6a645f); line-height: 1.5; flex: 1; }
-    .beneficio-footer { display: flex; align-items: center; justify-content: space-between; margin-top: 0.5rem; border-top: 1px solid var(--color-border, #2a2a2a); padding-top: 1rem; }
-    .beneficio-puntos { font-family: Georgia, serif; font-size: 1.4rem; color: var(--color-text, #f1ebe6); }
-    .beneficio-puntos span { font-size: 0.75rem; color: var(--color-muted, #6a645f); display: block; }
-    .beneficio-btn { background: var(--color-accent, #df9fb1); color: #1c1c1c; border: none; border-radius: 6px; padding: 0.5rem 1rem; font-size: 0.75rem; font-weight: 600; letter-spacing: 0.1em; text-transform: uppercase; cursor: pointer; }
-    .filtros { display: flex; gap: 0.5rem; flex-wrap: wrap; margin-bottom: 1rem; }
-    .filtro-btn { background: transparent; border: 1px solid var(--color-border, #2a2a2a); color: var(--color-muted, #6a645f); border-radius: 20px; padding: 0.4rem 1rem; font-size: 0.8rem; cursor: pointer; transition: all 0.2s; }
-    .filtro-btn.active, .filtro-btn:hover { border-color: var(--color-accent, #df9fb1); color: var(--color-accent, #df9fb1); }
-    .loading { text-align: center; color: var(--color-muted, #6a645f); padding: 3rem; }
-    .header-section { margin-bottom: 0.5rem; }
-    .header-section p { color: var(--color-muted, #6a645f); font-size: 0.9rem; margin-top: 0.5rem; }
+    body { background: var(--grafito) !important; }
+    .pag-beneficios {
+      padding: 120px 40px 80px;
+      max-width: 1100px;
+      margin: 0 auto;
+    }
+    .pag-eyebrow {
+      font-family: var(--font-body);
+      font-size: 10px;
+      letter-spacing: 0.28em;
+      text-transform: uppercase;
+      color: var(--rosa);
+      margin-bottom: 12px;
+    }
+    .pag-title {
+      font-family: var(--font-display);
+      font-size: clamp(32px, 5vw, 52px);
+      font-weight: 600;
+      color: var(--tiza);
+      margin-bottom: 8px;
+      line-height: 1.1;
+    }
+    .pag-sub {
+      font-size: 14px;
+      font-weight: 300;
+      color: var(--vison);
+      margin-bottom: 40px;
+    }
+    .filtros {
+      display: flex;
+      gap: 8px;
+      flex-wrap: wrap;
+      margin-bottom: 32px;
+    }
+    .filtro-btn {
+      font-family: var(--font-body);
+      font-size: 10px;
+      letter-spacing: 0.14em;
+      text-transform: uppercase;
+      background: transparent;
+      border: 1px solid #3a3a3a;
+      color: var(--vison);
+      border-radius: 20px;
+      padding: 8px 18px;
+      cursor: pointer;
+      transition: var(--transition);
+    }
+    .filtro-btn:hover,
+    .filtro-btn.active {
+      border-color: var(--rosa);
+      color: var(--tiza);
+      background: rgba(223,159,177,0.15);
+    }
+    .beneficios-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+      gap: 16px;
+    }
+    .ben-card {
+      background: #232323;
+      border: 0.5px solid #3a3a3a;
+      border-radius: 12px;
+      padding: 28px 24px;
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+      transition: var(--transition);
+    }
+    .ben-card:hover {
+      transform: translateY(-3px);
+      box-shadow: 0 8px 32px rgba(0,0,0,0.3);
+    }
+    .ben-tipo {
+      font-family: var(--font-body);
+      font-size: 9px;
+      letter-spacing: 0.2em;
+      text-transform: uppercase;
+      color: var(--rosa);
+      font-weight: 500;
+    }
+    .ben-nombre {
+      font-family: var(--font-display);
+      font-size: 20px;
+      font-weight: 600;
+      color: var(--tiza);
+      line-height: 1.2;
+    }
+    .ben-desc {
+      font-size: 13px;
+      font-weight: 300;
+      color: var(--vison);
+      line-height: 1.6;
+      flex: 1;
+    }
+    .ben-footer {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      margin-top: 12px;
+      padding-top: 16px;
+      border-top: 0.5px solid #3a3a3a;
+    }
+    .ben-puntos-num {
+      font-family: var(--font-display);
+      font-size: 28px;
+      font-weight: 300;
+      color: var(--tiza);
+      line-height: 1;
+    }
+    .ben-puntos-label {
+      font-size: 10px;
+      letter-spacing: 0.1em;
+      text-transform: uppercase;
+      color: var(--vison);
+      margin-top: 2px;
+    }
+    .loading-state {
+      grid-column: 1 / -1;
+      text-align: center;
+      padding: 60px 0;
+      font-size: 13px;
+      color: var(--vison);
+      font-weight: 300;
+    }
+    @media (max-width: 768px) {
+      .pag-beneficios { padding: 100px 20px 60px; }
+      .beneficios-grid { grid-template-columns: 1fr; }
+    }
   </style>
 </head>
 <body>
-  <header class="site-header">
-    <a href="../index.html" class="logo">CLUB <em>JAZMÍN</em> DE ROSAS</a>
-    <button class="menu-toggle" id="menuToggle" aria-label="Menú">&#9776;</button>
-    <nav class="site-nav" id="siteNav">
-      <button class="menu-close" id="menuClose">&#10005;</button>
-      <a href="../index.html">Inicio</a>
-      <a href="perfil.html">Mi perfil</a>
-      <a href="beneficios.html">Beneficios</a>
-      <a href="skinbook.html">Skinbook</a>
-    </nav>
-  </header>
 
-  <main class="container" style="padding-top: 6rem; max-width: 1100px; margin: 0 auto; padding-bottom: 4rem;">
-    <div class="header-section">
-      <p style="font-size:0.75rem; letter-spacing:0.15em; text-transform:uppercase; color: var(--color-accent,#df9fb1);">Catálogo</p>
-      <h1 style="font-family:Georgia,serif; font-size:2rem; color: var(--color-text,#f1ebe6); margin:0.25rem 0;">Beneficios disponibles</h1>
-      <p>Canjeá tus puntos por descuentos, productos y experiencias exclusivas.</p>
-    </div>
+  <nav class="nav">
+    <a href="../index.html" class="nav-logo">CLUB <em>JAZMÍN</em> DE ROSAS</a>
+    <ul class="nav-links">
+      <li><a href="../index.html">Inicio</a></li>
+      <li><a href="perfil.html">Mi perfil</a></li>
+      <li><a href="beneficios.html">Beneficios</a></li>
+      <li><a href="skinbook.html">Skinbook</a></li>
+    </ul>
+    <button class="nav-hamburger" id="hamburger" aria-label="Menú">
+      <span></span><span></span><span></span>
+    </button>
+  </nav>
+
+  <div class="nav-mobile" id="navMobile">
+    <button class="nav-mobile-close" id="navClose">&#10005;</button>
+    <a href="../index.html">Inicio</a>
+    <a href="perfil.html">Mi perfil</a>
+    <a href="beneficios.html">Beneficios</a>
+    <a href="skinbook.html">Skinbook</a>
+  </div>
+
+  <main class="pag-beneficios">
+    <p class="pag-eyebrow">Catálogo</p>
+    <h1 class="pag-title">Beneficios disponibles</h1>
+    <p class="pag-sub">Canjeá tus puntos por descuentos, productos y experiencias exclusivas.</p>
 
     <div class="filtros" id="filtros">
       <button class="filtro-btn active" data-tipo="">Todos</button>
@@ -52,12 +173,13 @@
     </div>
 
     <div class="beneficios-grid" id="beneficiosGrid">
-      <div class="loading">Cargando beneficios...</div>
+      <div class="loading-state">Cargando beneficios…</div>
     </div>
   </main>
 
-  <footer style="text-align:center; padding: 2rem; border-top: 1px solid var(--color-border,#2a2a2a);">
-    <p style="font-size:0.8rem; color: var(--color-muted,#6a645f);">CLUB <em>JAZMÍN</em> DE ROSAS &nbsp;·&nbsp; club.jazminderosas.com</p>
+  <footer>
+    <p class="footer-logo">CLUB <em>JAZMÍN</em> DE ROSAS</p>
+    <p class="footer-sub">club.jazminderosas.com</p>
   </footer>
 
   <script>
@@ -82,38 +204,38 @@
         );
         todos = await res.json();
         renderizar();
-      } catch (e) {
+      } catch {
         document.getElementById('beneficiosGrid').innerHTML =
-          '<p style="color:#6a645f;text-align:center;padding:2rem;">No se pudieron cargar los beneficios. Intentá de nuevo más tarde.</p>';
+          '<div class="loading-state">No se pudieron cargar los beneficios. Intentá más tarde.</div>';
       }
     }
 
     function renderizar() {
       const grid = document.getElementById('beneficiosGrid');
       const lista = filtroActivo ? todos.filter(b => b.tipo === filtroActivo) : todos;
-
       if (!lista.length) {
-        grid.innerHTML = '<p style="color:#6a645f;text-align:center;padding:2rem;">Sin beneficios en esta categoría.</p>';
+        grid.innerHTML = '<div class="loading-state">Sin beneficios en esta categoría.</div>';
         return;
       }
-
       grid.innerHTML = lista.map(b => `
-        <div class="beneficio-card">
-          <div class="beneficio-tipo">${TIPO_LABEL[b.tipo] || b.tipo}</div>
-          <div class="beneficio-nombre">${b.nombre}</div>
-          <div class="beneficio-desc">${b.descripcion || ''}</div>
-          <div class="beneficio-footer">
-            <div class="beneficio-puntos">
-              ${b.puntos_requeridos.toLocaleString('es-AR')}
-              <span>puntos</span>
+        <div class="ben-card">
+          <div class="ben-tipo">${TIPO_LABEL[b.tipo] || b.tipo}</div>
+          <div class="ben-nombre">${b.nombre}</div>
+          <div class="ben-desc">${b.descripcion || ''}</div>
+          <div class="ben-footer">
+            <div>
+              <div class="ben-puntos-num">${b.puntos_requeridos.toLocaleString('es-AR')}</div>
+              <div class="ben-puntos-label">puntos</div>
             </div>
-            <button class="beneficio-btn" onclick="canjear('${b.id}', '${b.nombre.replace(/'/g, '')}', ${b.puntos_requeridos})">Canjear</button>
+            <button class="btn btn-primary" onclick="canjear('${b.nombre.replace(/'/g,'')}',${b.puntos_requeridos})">
+              Canjear
+            </button>
           </div>
         </div>
       `).join('');
     }
 
-    function canjear(id, nombre, puntos) {
+    function canjear(nombre, puntos) {
       alert(`Para canjear "${nombre}" (${puntos} puntos), presentá tu perfil del Club en el local o escribinos por WhatsApp.`);
     }
 
@@ -126,10 +248,10 @@
       renderizar();
     });
 
-    document.getElementById('menuToggle')?.addEventListener('click', () =>
-      document.getElementById('siteNav')?.classList.add('open'));
-    document.getElementById('menuClose')?.addEventListener('click', () =>
-      document.getElementById('siteNav')?.classList.remove('open'));
+    document.getElementById('hamburger')?.addEventListener('click', () =>
+      document.getElementById('navMobile').classList.add('open'));
+    document.getElementById('navClose')?.addEventListener('click', () =>
+      document.getElementById('navMobile').classList.remove('open'));
 
     cargarBeneficios();
   </script>
